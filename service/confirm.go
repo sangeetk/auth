@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/urantiatech/microservices/auth/api"
-	"github.com/urantiatech/microservices/auth/model"
+	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/model"
 )
 
 func (Auth) Confirm(_ context.Context, req api.ConfirmRequest) (api.ConfirmResponse, error) {

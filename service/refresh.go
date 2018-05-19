@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/urantiatech/microservices/auth/api"
+	"git.urantiatech.com/auth/auth/api"
 )
 
 func (Auth) Refresh(_ context.Context, req api.RefreshRequest) (api.RefreshResponse, error) {

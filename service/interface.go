@@ -5,9 +5,9 @@ import (
 	"errors"
 	"time"
 
+	"git.urantiatech.com/auth/auth/api"
 	"github.com/jinzhu/gorm"
 	"github.com/patrickmn/go-cache"
-	"github.com/urantiatech/microservices/auth/api"
 )
 
 var DB *gorm.DB

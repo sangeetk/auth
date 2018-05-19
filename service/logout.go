@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
+	"git.urantiatech.com/auth/auth/api"
 	"github.com/patrickmn/go-cache"
-	"github.com/urantiatech/microservices/auth/api"
 )
 
 func (Auth) Logout(_ context.Context, req api.LogoutRequest) (api.LogoutResponse, error) {

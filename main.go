@@ -8,16 +8,16 @@ import (
 	"net/http"
 	"time"
 
-	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	httptransport "github.com/urantiatech/kit/transport/http"
 	// _ "github.com/jinzhu/gorm/dialects/sqlite"
+	"git.urantiatech.com/auth/auth/middleware"
+	"git.urantiatech.com/auth/auth/model"
+	"git.urantiatech.com/auth/auth/service"
 	"github.com/patrickmn/go-cache"
-	"github.com/urantiatech/microservices/auth/middleware"
-	"github.com/urantiatech/microservices/auth/model"
-	"github.com/urantiatech/microservices/auth/service"
 	"github.com/urfave/negroni"
 )
 

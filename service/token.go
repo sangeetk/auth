@@ -8,8 +8,8 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	// _ "github.com/jinzhu/gorm/dialects/sqlite"
+	"git.urantiatech.com/auth/auth/model"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/urantiatech/microservices/auth/model"
 )
 
 func ParseToken(tokenString string) (model.User, error) {

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/urantiatech/microservices/auth/api"
+	"git.urantiatech.com/auth/auth/api"
 )
 
 func (Auth) Identify(_ context.Context, req api.IdentifyRequest) (api.IdentifyResponse, error) {

@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-kit/kit/endpoint"
-	"github.com/urantiatech/microservices/auth/api"
-	"github.com/urantiatech/microservices/auth/service"
+	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/service"
+	"github.com/urantiatech/kit/endpoint"
 )
 
 func makeRegisterEndpoint(svc service.Auth) endpoint.Endpoint {

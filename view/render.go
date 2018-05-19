@@ -6,10 +6,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/urantiatech/microservices/auth/constant"
-	"github.com/urantiatech/microservices/auth/model"
-	"github.com/urantiatech/microservices/auth/template/layout"
-	"github.com/urantiatech/microservices/auth/template/page"
+	"git.urantiatech.com/auth/auth/constant"
+	"git.urantiatech.com/auth/auth/model"
+	"git.urantiatech.com/auth/auth/template/layout"
+	"git.urantiatech.com/auth/auth/template/page"
 )
 
 // Templates with functions available to them

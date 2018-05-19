@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/urantiatech/microservices/auth/api"
-	"github.com/urantiatech/microservices/auth/model"
+	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/model"
 )
 
 func (a Auth) Profile(ctx context.Context, req api.ProfileRequest) (api.ProfileResponse, error) {

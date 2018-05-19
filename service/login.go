@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
+	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/model"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/urantiatech/microservices/auth/api"
-	"github.com/urantiatech/microservices/auth/model"
 	"golang.org/x/crypto/bcrypt"
 )
 
