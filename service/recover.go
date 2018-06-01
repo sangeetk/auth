@@ -5,47 +5,47 @@ import (
 	"time"
 
 	"git.urantiatech.com/auth/auth/api"
-	"git.urantiatech.com/auth/auth/model"
+	"git.urantiatech.com/auth/auth/user"
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Recover - Resets the password
 func (Auth) Recover(_ context.Context, req api.RecoverRequest) (api.RecoverResponse, error) {
 	var response api.RecoverResponse
-	var user model.User
 
 	if req.Cmd == api.RecoveryToken {
-		DB.Where("email = ?", req.Email).Where("confirmed = ?", true).First(&user)
-		if user.ID == 0 {
-			response.Err = NotFound.Error()
+		u, err := user.Read(req.Username)
+		if err != nil || u.Confirmed != true {
+			response.Err = ErrorNotFound.Error()
 			return response, nil
 		}
 
-		if user.RecoverToken == "" || user.RecoverTokenExpiry.Unix() < time.Now().Unix() {
-			user.RecoverToken = RandomToken(16)
-			user.RecoverTokenExpiry = time.Now().Add(time.Hour * 24)
-			DB.Save(&user)
+		if u.RecoverToken == "" || u.RecoverTokenExpiry.Unix() < time.Now().Unix() {
+			u.RecoverToken = RandomToken(16)
+			u.RecoverTokenExpiry = time.Now().Add(time.Hour * 24)
+			u.Save()
 		}
-		response.RecoverToken = user.RecoverToken
+		response.RecoverToken = u.RecoverToken
 
 	} else if req.Cmd == api.ResetPassword && req.RecoverToken != "" && req.Password != "" {
-		DB.Where("recover_token = ?", req.RecoverToken).Where("confirmed = ?", true).First(&user)
-		if user.ID == 0 || user.RecoverTokenExpiry.Unix() < time.Now().Unix() {
-			response.Err = ExpiredToken.Error()
+		u, err := user.Read(req.Username)
+		if err != nil || req.RecoverToken != u.RecoverToken || u.RecoverTokenExpiry.Unix() < time.Now().Unix() {
+			response.Err = ErrorExpiredToken.Error()
 			return response, nil
 		}
 
 		PasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), 11)
 		if err != nil {
-			response.Err = UnknownError.Error()
+			response.Err = ErrorUnknown.Error()
 			return response, nil
 		}
-		user.RecoverToken = ""
-		user.RecoverTokenExpiry = time.Unix(0, 0)
-		user.Password = PasswordHash
-		DB.Save(&user)
+		u.RecoverToken = ""
+		u.RecoverTokenExpiry = time.Unix(0, 0)
+		u.Password = PasswordHash
+		u.Save()
 
 	} else {
-		response.Err = InvalidRequest.Error()
+		response.Err = ErrorInvalidRequest.Error()
 	}
 	return response, nil
 }

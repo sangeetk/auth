@@ -3,22 +3,19 @@ package service
 import (
 	"fmt"
 	"math/rand"
-	"strconv"
 
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	// _ "github.com/jinzhu/gorm/dialects/sqlite"
-	"git.urantiatech.com/auth/auth/model"
+	"git.urantiatech.com/auth/auth/user"
 	"github.com/dgrijalva/jwt-go"
 )
 
-func ParseToken(tokenString string) (model.User, error) {
-	var user model.User
+// ParseToken - Parses the access token and extract username, roles etc
+func ParseToken(tokenString string) (user.User, error) {
+	var u user.User
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, InvalidToken
+			return nil, ErrorInvalidToken
 		}
 
 		// signingKey is a []byte containing your secret, e.g. []byte("my_secret_key")
@@ -26,19 +23,19 @@ func ParseToken(tokenString string) (model.User, error) {
 	})
 
 	if err != nil || !token.Valid {
-		return user, InvalidToken
+		return u, ErrorInvalidToken
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		uid := fmt.Sprint(claims["uid"])
-		user.ID, _ = strconv.ParseUint(uid, 10, 64)
-		user.Fname = claims["fname"].(string)
-		user.Lname = claims["lname"].(string)
-		user.Email = claims["email"].(string)
+		u.Username = claims["username"].(string)
+		u.FirstName = claims["fname"].(string)
+		u.LastName = claims["lname"].(string)
+		u.Email = claims["email"].(string)
 	}
-	return user, nil
+	return u, nil
 }
 
+// RandomToken - Generates a random token
 func RandomToken(size int) string {
 	b := make([]byte, size)
 	rand.Read(b)

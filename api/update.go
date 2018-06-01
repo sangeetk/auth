@@ -4,13 +4,14 @@ import (
 	"time"
 )
 
+// UpdateRequest - Update the existing user
 type UpdateRequest struct {
-	Uid      uint64    `json:"uid"`
-	Fname    string    `json:"fname"`
-	Lname    string    `json:"lname"`
-	Email    string    `json:"email"`
-	Password string    `json:"password"`
-	Birthday time.Time `json:"birthday"`
+	Username  string    `json:"username"`
+	FirstName string    `json:"fname"`
+	LastName  string    `json:"lname"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Birthday  time.Time `json:"birthday"`
 
 	Address1 string `json:"address1"`
 	Address2 string `json:"address2"`
@@ -23,6 +24,7 @@ type UpdateRequest struct {
 	Introduction string `json:"introduction"`
 }
 
+// UpdateResponse - Returns error if update fails
 type UpdateResponse struct {
 	Err string `json:"err,omitempty"`
 }

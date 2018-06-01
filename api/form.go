@@ -1,13 +1,15 @@
 package api
 
+// Request - Generic request
 type Request struct {
-	Uri    string `json:"uri"`
+	URI    string `json:"uri"`
 	Domain string `json:"domain"`
 	Data   string `json:"data"`
 }
 
+// Response - Generic response
 type Response struct {
-	Html        string `json:"html"`
+	HTML        string `json:"html"`
 	AccessToken string `json:"access_token,omitempty"`
 	Err         string `json:"err,omitempty"`
 }

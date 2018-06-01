@@ -5,83 +5,70 @@ import (
 	"log"
 
 	"git.urantiatech.com/auth/auth/api"
-	"git.urantiatech.com/auth/auth/model"
+	"git.urantiatech.com/auth/auth/user"
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Update - Updates the user
 func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse, error) {
 	var response = api.UpdateResponse{}
-	var user model.User
 
-	tx := DB.Begin()
-
-	if req.Uid == 0 || tx.Where(&model.User{ID: req.Uid}).First(&user).RecordNotFound() {
-		tx.Rollback()
-		response.Err = NotFound.Error()
-		return response, nil
+	u, err := user.Read(req.Username)
+	if err != nil || u.Confirmed != true {
+		response.Err = ErrorNotFound.Error()
+		return response, err
 	}
 
-	// User table
-	u := make(map[string]interface{})
-	if req.Fname != "" {
-		u["fname"] = req.Fname
+	// Update user fields
+	if req.FirstName != "" {
+		u.FirstName = req.FirstName
 	}
-	if req.Lname != "" {
-		u["lname"] = req.Lname
+	if req.LastName != "" {
+		u.LastName = req.LastName
 	}
 	if req.Email != "" {
-		u["email"] = req.Email
+		u.Email = req.Email
 	}
 	if !req.Birthday.IsZero() {
-		u["birthday"] = req.Birthday
+		u.Birthday = req.Birthday
 	}
 	if req.Password != "" {
 		PasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), 11)
 		if err != nil {
 			log.Println("Bcrypt error:", err.Error())
 		}
-		u["password"] = PasswordHash
+		u.Password = PasswordHash
 	}
-	tx.Model(&user).Where(&model.User{ID: req.Uid}).Updates(u)
 
-	// Address Table
-	var address = model.Address{Uid: req.Uid}
-	a := make(map[string]interface{})
+	// Address information
 	if req.Address1 != "" {
-		a["address1"] = req.Address1
+		u.Address.Address1 = req.Address1
 	}
 	if req.Address2 != "" {
-		a["address2"] = req.Address2
+		u.Address.Address2 = req.Address2
 	}
 	if req.City != "" {
-		a["city"] = req.City
+		u.Address.City = req.City
 	}
 	if req.State != "" {
-		a["state"] = req.State
+		u.Address.State = req.State
 	}
 	if req.Country != "" {
-		a["country"] = req.Country
+		u.Address.Country = req.Country
 	}
 	if req.Zip != "" {
-		a["zip"] = req.Zip
+		u.Address.Zip = req.Zip
 	}
 
-	tx.Model(&address).Where(&model.Address{Uid: req.Uid}).Updates(a)
-
-	// Profile Table
-	var profile = model.Profile{}
-	p := make(map[string]interface{})
+	// Profile information
 	if req.Profession != "" {
-		p["profession"] = req.Profession
+		u.Profile.Profession = req.Profession
 	}
 	if req.Introduction != "" {
-		p["introduction"] = req.Introduction
+		u.Profile.Introduction = req.Introduction
 	}
-	tx.Model(&profile).Where(&model.Profile{Uid: req.Uid}).Updates(p)
 
-	// Role Table
-
-	tx.Commit()
+	u.Save()
 
 	return response, nil
 }

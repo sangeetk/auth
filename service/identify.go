@@ -6,6 +6,7 @@ import (
 	"git.urantiatech.com/auth/auth/api"
 )
 
+// Identify - Identify the user based on the AccessToken
 func (Auth) Identify(_ context.Context, req api.IdentifyRequest) (api.IdentifyResponse, error) {
 	var response api.IdentifyResponse
 
@@ -17,14 +18,13 @@ func (Auth) Identify(_ context.Context, req api.IdentifyRequest) (api.IdentifyRe
 
 	// Check by looking for Blacklisted tokens in Redis Cache
 	if _, found := BlacklistTokens.Get(req.AccessToken); found {
-		response.Err = InvalidToken.Error()
+		response.Err = ErrorInvalidToken.Error()
 		return response, nil
 	}
 
 	// Send the user details
-	response.Uid = user.ID
-	response.Fname = user.Fname
-	response.Lname = user.Lname
+	response.FirstName = user.FirstName
+	response.LastName = user.LastName
 	response.Email = user.Email
 	//response.Roles = user.Roles
 

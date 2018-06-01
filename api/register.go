@@ -4,14 +4,17 @@ import (
 	"time"
 )
 
+// RegisterRequest - New User registration request
 type RegisterRequest struct {
-	Domain   string    `json:"domain"`
-	Username string    `json:"username"`
-	Fname    string    `json:"fname"`
-	Lname    string    `json:"lname"`
-	Email    string    `json:"email"`
-	Password string    `json:"password"`
-	Birthday time.Time `json:"birthday"`
+	Username  string    `json:"username"`
+	Name      string    `json:"name"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	Birthday  time.Time `json:"birthday"`
+	Domain    string    `json:"domain"`
+	Roles     []string  `json:"roles"`
 
 	Address1 string `json:"address1"`
 	Address2 string `json:"address2"`
@@ -24,6 +27,7 @@ type RegisterRequest struct {
 	Introduction string `json:"introduction"`
 }
 
+// RegisterResponse - New User registration response
 type RegisterResponse struct {
 	ConfirmToken string `json:"confirm_token,omitempty"`
 	Err          string `json:"err,omitempty"`

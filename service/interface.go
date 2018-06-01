@@ -6,16 +6,19 @@ import (
 	"time"
 
 	"git.urantiatech.com/auth/auth/api"
-	"github.com/jinzhu/gorm"
 	"github.com/patrickmn/go-cache"
 )
 
-var DB *gorm.DB
-
+// SigningKey - JWT Signing Key
 var SigningKey []byte
+
+// TokenValidity - JWT Access Token Validity
 var TokenValidity time.Duration
+
+// BlacklistTokens - Cache to store invalid tokens
 var BlacklistTokens *cache.Cache
 
+// AuthService - Authentication and Authorization Microservice
 type AuthService interface {
 	Register(context.Context, api.RegisterRequest) (api.RegisterResponse, error)
 	Login(context.Context, api.LoginRequest) (api.LoginResponse, error)
@@ -28,15 +31,29 @@ type AuthService interface {
 	Update(context.Context, api.UpdateRequest) (api.UpdateResponse, error)
 }
 
+// Auth - Wrapper for AuthService Interface
 type Auth struct{}
 
-var NotFound = errors.New("Not Found")
-var AlreadyRegistered = errors.New("Already Registered")
-var InvalidToken = errors.New("Invalid Token")
-var ExpiredToken = errors.New("Expired Token")
-var InvalidLogin = errors.New("Invalid Login")
-var InvalidRequest = errors.New("Invalid Request")
-var UnknownError = errors.New("Unknown Error")
+// ErrorNotFound - User Not Found
+var ErrorNotFound = errors.New("Not Found")
 
-// ServiceMiddleware is a chainable behavior modifier for AuthService.
-type ServiceMiddleware func(AuthService) AuthService
+// ErrorAlreadyRegistered - User Already Registered
+var ErrorAlreadyRegistered = errors.New("Already Registered")
+
+// ErrorInvalidToken - Invalid Token
+var ErrorInvalidToken = errors.New("Invalid Token")
+
+// ErrorExpiredToken - Expired Token
+var ErrorExpiredToken = errors.New("Expired Token")
+
+// ErrorInvalidLogin - Invalid Login
+var ErrorInvalidLogin = errors.New("Invalid Login")
+
+// ErrorInvalidRequest - Invalid Request
+var ErrorInvalidRequest = errors.New("Invalid Request")
+
+// ErrorUnknown - Unknown Error
+var ErrorUnknown = errors.New("Unknown Error")
+
+// AuthMiddleware - Service Middleware is a chainable behavior modifier for AuthService.
+type AuthMiddleware func(AuthService) AuthService

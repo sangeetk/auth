@@ -3,17 +3,19 @@ package service
 import (
 	"context"
 	"log"
+	"time"
 
 	"git.urantiatech.com/auth/auth/api"
-	"git.urantiatech.com/auth/auth/model"
+	"git.urantiatech.com/auth/auth/user"
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Register - Register a new User
 func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterResponse, error) {
 	var response = api.RegisterResponse{}
 
-	if req.Email == "" || req.Password == "" {
-		response.Err = InvalidRequest.Error()
+	if req.Username == "" || req.Email == "" || req.Password == "" {
+		response.Err = ErrorInvalidRequest.Error()
 		return response, nil
 	}
 
@@ -25,36 +27,30 @@ func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterRe
 	// Generate random confirm token
 	ConfirmToken := RandomToken(16)
 
-	user := model.User{Email: req.Email}
-	tx := DB.Begin()
-
-	tx.Where("email = ?", user.Email).First(&user)
-	if user.ID != 0 {
-		response.Err = AlreadyRegistered.Error()
-		tx.Rollback()
-		return response, nil
-	}
-
 	// Use email as username if empty
 	if req.Username == "" {
 		req.Username = req.Email
 	}
 
-	user = model.User{
-		Domain:       req.Domain,
-		Username:     req.Username,
-		Fname:        req.Fname,
-		Lname:        req.Lname,
-		Email:        req.Email,
-		Password:     PasswordHash,
-		Birthday:     req.Birthday,
-		ConfirmToken: ConfirmToken,
-		Confirmed:    false,
+	var u = user.User{
+		Username:      req.Username,
+		Name:          req.Name,
+		FirstName:     req.FirstName,
+		LastName:      req.LastName,
+		Email:         req.Email,
+		Password:      PasswordHash,
+		Birthday:      req.Birthday,
+		InitialDomain: req.Domain,
+		ConfirmToken:  ConfirmToken,
+		Confirmed:     false,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
 	}
-	DB.Create(&user)
 
-	address := model.Address{
-		Uid:         user.ID,
+	u.Roles = make(map[string][]string)
+	u.Roles[req.Domain] = req.Roles
+
+	u.Address = user.Address{
 		AddressType: "",
 		Address1:    req.Address1,
 		Address2:    req.Address2,
@@ -63,15 +59,16 @@ func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterRe
 		Country:     req.Country,
 		Zip:         req.Zip,
 	}
-	DB.Create(&address)
 
-	profile := model.Profile{Uid: user.ID, Profession: req.Profession, Introduction: req.Introduction}
-	if err != nil {
-		log.Println("Error: ", err.Error())
+	u.Profile = user.Profile{
+		Profession:   req.Profession,
+		Introduction: req.Introduction,
 	}
-	DB.Create(&profile)
 
-	tx.Commit()
+	if err := u.Create(); err != nil {
+		response.Err = ErrorAlreadyRegistered.Error()
+		return response, nil
+	}
 
 	response.ConfirmToken = ConfirmToken
 	return response, nil

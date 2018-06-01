@@ -5,27 +5,32 @@ import (
 	"time"
 
 	"git.urantiatech.com/auth/auth/api"
-	"git.urantiatech.com/auth/auth/model"
+	"git.urantiatech.com/auth/auth/user"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Login - Log in the user after credentials are successfully authenticated
 func (Auth) Login(_ context.Context, req api.LoginRequest) (api.LoginResponse, error) {
 	var response api.LoginResponse
-	var user model.User
 
-	DB.Where("email = ?", req.Email).Where("confirmed = ?", true).First(&user)
+	// Get user details
+	user, err := user.Read(req.Username)
+	if err != nil || user.Confirmed != true {
+		response.Err = ErrorInvalidLogin.Error()
+		return response, nil
+	}
 
-	if user.ID == 0 || bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
-		response.Err = InvalidLogin.Error()
+	// Check password
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
+		response.Err = ErrorInvalidLogin.Error()
 		return response, nil
 	}
 
 	// Create an Access JWT Token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"uid":   user.ID,
-		"fname": user.Fname,
-		"lname": user.Lname,
+		"fname": user.FirstName,
+		"lname": user.LastName,
 		"email": user.Email,
 		"nbf":   time.Now().Unix(),
 		"exp":   time.Now().Add(TokenValidity).Unix(),

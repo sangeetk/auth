@@ -2,12 +2,12 @@ package middleware
 
 import (
 	"github.com/codegangsta/negroni"
-	_ "github.com/unrolled/render"
 	"net/http"
 	//"os"
 )
 
-func Database() negroni.HandlerFunc {
+// Session - Session Middle to extend session timeouts
+func Session() negroni.HandlerFunc {
 	//database := os.Getenv("DB_NAME")
 	/*session, err := mgo.Dial("127.0.0.1:27017")
 
