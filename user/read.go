@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 )
 
+// Read - Reads the user information from file
 func Read(u string) (*User, error) {
 	var user = new(User)
 

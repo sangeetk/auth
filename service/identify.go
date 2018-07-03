@@ -23,10 +23,12 @@ func (Auth) Identify(_ context.Context, req api.IdentifyRequest) (api.IdentifyRe
 	}
 
 	// Send the user details
+	response.Username = user.Username
+	response.Name = user.Name
 	response.FirstName = user.FirstName
 	response.LastName = user.LastName
 	response.Email = user.Email
-	//response.Roles = user.Roles
+	response.Birthday = user.Birthday
 
 	return response, nil
 }

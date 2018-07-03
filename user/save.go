@@ -1,15 +1,17 @@
 package user
 
 import (
+	"encoding/json"
 	"io/ioutil"
-	"os"
+	"time"
 )
 
+// Save - Updates the user details
 func (u *User) Save() error {
 	path := Path(u.Username)
+	u.UpdatedAt = time.Now()
 
-	content := ""
-
-	err := ioutil.WriteFile(path, []byte(content), os.ModePerm)
+	userJSON, _ := json.MarshalIndent(u, "", "    ")
+	err := ioutil.WriteFile(path, userJSON, 0644)
 	return err
 }

@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"log"
-	"time"
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/user"
@@ -43,15 +42,13 @@ func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterRe
 		InitialDomain: req.Domain,
 		ConfirmToken:  ConfirmToken,
 		Confirmed:     false,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
 	}
 
 	u.Roles = make(map[string][]string)
 	u.Roles[req.Domain] = req.Roles
 
 	u.Address = user.Address{
-		AddressType: "",
+		AddressType: req.AddressType,
 		Address1:    req.Address1,
 		Address2:    req.Address2,
 		City:        req.City,

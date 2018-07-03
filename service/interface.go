@@ -12,8 +12,11 @@ import (
 // SigningKey - JWT Signing Key
 var SigningKey []byte
 
-// TokenValidity - JWT Access Token Validity
-var TokenValidity time.Duration
+// AccessTokenValidity - JWT Access Token Validity
+var AccessTokenValidity time.Duration
+
+// RefreshTokenValidity - JWT Refresh Token Validity
+var RefreshTokenValidity time.Duration
 
 // BlacklistTokens - Cache to store invalid tokens
 var BlacklistTokens *cache.Cache

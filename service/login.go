@@ -28,19 +28,35 @@ func (Auth) Login(_ context.Context, req api.LoginRequest) (api.LoginResponse, e
 	}
 
 	// Create an Access JWT Token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"fname": user.FirstName,
-		"lname": user.LastName,
-		"email": user.Email,
-		"nbf":   time.Now().Unix(),
-		"exp":   time.Now().Add(TokenValidity).Unix(),
+	atoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": user.Username,
+		"fname":    user.FirstName,
+		"lname":    user.LastName,
+		"email":    user.Email,
+		"nbf":      time.Now().Unix(),
+		"exp":      time.Now().Add(AccessTokenValidity).Unix(),
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err := token.SignedString(SigningKey)
-	response.AccessToken = tokenString
+	response.AccessToken, err = atoken.SignedString(SigningKey)
 	if err != nil {
 		response.Err = err.Error()
 	}
+
+	// Create an Access JWT Token
+	rtoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": user.Username,
+		"fname":    user.FirstName,
+		"lname":    user.LastName,
+		"email":    user.Email,
+		"nbf":      time.Now().Unix(),
+		"exp":      time.Now().Add(RefreshTokenValidity).Unix(),
+	})
+	// Sign and get the complete encoded token as a string using the secret
+	response.RefreshToken, err = rtoken.SignedString(SigningKey)
+	if err != nil {
+		response.Err = err.Error()
+	}
+
 	return response, nil
 }

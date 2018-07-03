@@ -16,12 +16,13 @@ type RegisterRequest struct {
 	Domain    string    `json:"domain"`
 	Roles     []string  `json:"roles"`
 
-	Address1 string `json:"address1"`
-	Address2 string `json:"address2"`
-	City     string `json:"city"`
-	State    string `json:"state"`
-	Country  string `json:"country"`
-	Zip      string `json:"zip"`
+	AddressType string `json:"address_type"`
+	Address1    string `json:"address1"`
+	Address2    string `json:"address2"`
+	City        string `json:"city"`
+	State       string `json:"state"`
+	Country     string `json:"country"`
+	Zip         string `json:"zip"`
 
 	Profession   string `json:"profession"`
 	Introduction string `json:"introduction"`

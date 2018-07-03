@@ -13,10 +13,17 @@ import (
 func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse, error) {
 	var response = api.UpdateResponse{}
 
+	// Validate the token and get user info
+	_, err := ParseToken(req.AccessToken)
+	if err == ErrorInvalidToken {
+		response.Err = err.Error()
+		return response, nil
+	}
+
 	u, err := user.Read(req.Username)
 	if err != nil || u.Confirmed != true {
 		response.Err = ErrorNotFound.Error()
-		return response, err
+		return response, nil
 	}
 
 	// Update user fields
@@ -41,6 +48,9 @@ func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse
 	}
 
 	// Address information
+	if req.AddressType != "" {
+		u.Address.AddressType = req.AddressType
+	}
 	if req.Address1 != "" {
 		u.Address.Address1 = req.Address1
 	}
@@ -58,6 +68,11 @@ func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse
 	}
 	if req.Zip != "" {
 		u.Address.Zip = req.Zip
+	}
+
+	// Update Roles
+	if req.Domain != "" && len(req.Roles) > 0 {
+		u.Roles[req.Domain] = req.Roles
 	}
 
 	// Profile information
