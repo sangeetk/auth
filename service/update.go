@@ -27,6 +27,9 @@ func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse
 	}
 
 	// Update user fields
+	if req.Name != "" {
+		u.Name = req.Name
+	}
 	if req.FirstName != "" {
 		u.FirstName = req.FirstName
 	}
@@ -48,26 +51,26 @@ func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse
 	}
 
 	// Address information
-	if req.AddressType != "" {
-		u.Address.AddressType = req.AddressType
+	if req.Address.AddressType != "" {
+		u.Address.AddressType = req.Address.AddressType
 	}
-	if req.Address1 != "" {
-		u.Address.Address1 = req.Address1
+	if req.Address.Address1 != "" {
+		u.Address.Address1 = req.Address.Address1
 	}
-	if req.Address2 != "" {
-		u.Address.Address2 = req.Address2
+	if req.Address.Address2 != "" {
+		u.Address.Address2 = req.Address.Address2
 	}
-	if req.City != "" {
-		u.Address.City = req.City
+	if req.Address.City != "" {
+		u.Address.City = req.Address.City
 	}
-	if req.State != "" {
-		u.Address.State = req.State
+	if req.Address.State != "" {
+		u.Address.State = req.Address.State
 	}
-	if req.Country != "" {
-		u.Address.Country = req.Country
+	if req.Address.Country != "" {
+		u.Address.Country = req.Address.Country
 	}
-	if req.Zip != "" {
-		u.Address.Zip = req.Zip
+	if req.Address.Zip != "" {
+		u.Address.Zip = req.Address.Zip
 	}
 
 	// Update Roles
@@ -76,11 +79,12 @@ func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse
 	}
 
 	// Profile information
-	if req.Profession != "" {
-		u.Profile.Profession = req.Profession
-	}
-	if req.Introduction != "" {
-		u.Profile.Introduction = req.Introduction
+	for k, v := range req.Profile {
+		if v == "" {
+			delete(u.Profile, k)
+		} else {
+			u.Profile[k] = v
+		}
 	}
 
 	u.Save()

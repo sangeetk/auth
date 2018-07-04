@@ -30,10 +30,18 @@ func (a Auth) Profile(ctx context.Context, req api.ProfileRequest) (api.ProfileR
 			response.Err = ErrorNotFound.Error()
 			return response, nil
 		}
-		response.Profile = make(map[string]string)
+
 		// Add fields
-		response.Profile["profession"] = u.Profile.Profession
-		response.Profile["introduction"] = u.Profile.Introduction
+		response.Username = u.Username
+		response.Name = u.Name
+		response.FirstName = u.FirstName
+		response.LastName = u.LastName
+		response.Email = u.Email
+		response.Birthday = u.Birthday
+		response.InitialDomain = u.InitialDomain
+		response.Roles = u.Roles
+		response.Address = u.Address
+		response.Profile = u.Profile
 
 		return response, nil
 	}

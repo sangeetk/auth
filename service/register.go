@@ -47,20 +47,8 @@ func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterRe
 	u.Roles = make(map[string][]string)
 	u.Roles[req.Domain] = req.Roles
 
-	u.Address = user.Address{
-		AddressType: req.AddressType,
-		Address1:    req.Address1,
-		Address2:    req.Address2,
-		City:        req.City,
-		State:       req.State,
-		Country:     req.Country,
-		Zip:         req.Zip,
-	}
-
-	u.Profile = user.Profile{
-		Profession:   req.Profession,
-		Introduction: req.Introduction,
-	}
+	u.Address = req.Address
+	u.Profile = req.Profile
 
 	if err := u.Create(); err != nil {
 		response.Err = ErrorAlreadyRegistered.Error()

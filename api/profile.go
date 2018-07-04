@@ -1,5 +1,9 @@
 package api
 
+import (
+	"time"
+)
+
 // ProfileRequest - Request the profile for the logged-in user
 type ProfileRequest struct {
 	AccessToken string `json:"access_token"`
@@ -7,6 +11,15 @@ type ProfileRequest struct {
 
 // ProfileResponse - Returns the profile for the logged-in user
 type ProfileResponse struct {
-	Profile map[string]string `json:"profile,omitempty"`
-	Err     string            `json:"err,omitempty"`
+	Username      string              `json:"username"`
+	Name          string              `json:"name"`
+	FirstName     string              `json:"first_name"`
+	LastName      string              `json:"last_name"`
+	Email         string              `json:"email"`
+	Birthday      time.Time           `json:"birthday"`
+	InitialDomain string              `json:"initial_domain"`
+	Roles         map[string][]string `json:"roles"`
+	Address       Address             `json:"address"`
+	Profile       Profile             `json:"profile"`
+	Err           string              `json:"err,omitempty"`
 }

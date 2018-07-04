@@ -2,24 +2,9 @@ package user
 
 import (
 	"time"
+
+	"git.urantiatech.com/auth/auth/api"
 )
-
-// Profile - profile fields
-type Profile struct {
-	Profession   string `json:"profession"`
-	Introduction string `json:"introduction"`
-}
-
-// Address - address fields
-type Address struct {
-	AddressType string `json:"address_type"`
-	Address1    string `json:"address1"`
-	Address2    string `json:"address2"`
-	City        string `json:"city"`
-	State       string `json:"state"`
-	Country     string `json:"country"`
-	Zip         string `json:"zip"`
-}
 
 // User - user fields
 type User struct {
@@ -37,11 +22,11 @@ type User struct {
 	// Roles for each domain
 	Roles map[string][]string `json:"roles"`
 
-	// Profile
-	Profile Profile `json:"profile"`
-
 	// Address
-	Address Address `json:"address"`
+	Address api.Address `json:"address"`
+
+	// Profile
+	Profile api.Profile `json:"profile"`
 
 	// Confirm
 	ConfirmToken string `json:"confirm_token"`
