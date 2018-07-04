@@ -8,7 +8,7 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
-// Logout - Log outs the current user
+// Logout - Logouts the current user
 func (Auth) Logout(_ context.Context, req api.LogoutRequest) (api.LogoutResponse, error) {
 	var response api.LogoutResponse
 

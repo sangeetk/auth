@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-// DBPATH - Basedirectory for storing user profiles
-const DBPATH = "db"
+// DBPath - Basedirectory for storing user profiles
+var DBPath string
 
 // Hash - Gets md5 hash of a given string
 func Hash(u string) string {
@@ -17,7 +17,7 @@ func Hash(u string) string {
 // BaseDir - Creates base directory for user
 func BaseDir(u string) string {
 	hash := Hash(u)
-	dir := DBPATH
+	dir := DBPath
 
 	for i := 0; i < 10; i += 2 {
 		dir += "/" + fmt.Sprintf("%c%c", hash[i], hash[i+1])

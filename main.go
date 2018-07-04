@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"git.urantiatech.com/auth/auth/service"
+	"git.urantiatech.com/auth/auth/user"
 	"github.com/gorilla/mux"
 	"github.com/patrickmn/go-cache"
 	h "github.com/urantiatech/kit/transport/http"
@@ -18,10 +19,10 @@ import (
 
 func main() {
 	var port int
-	var key, db string
+	var key string
 	flag.IntVar(&port, "port", 9999, "Port for running the UI")
 	flag.StringVar(&key, "key", "NEW", "Signing key")
-	flag.StringVar(&db, "db", "db", "Directory for storing user database")
+	flag.StringVar(&user.DBPath, "dbpath", "db", "Directory for storing user database")
 	flag.Parse()
 
 	if os.Getenv("PORT") != "" {

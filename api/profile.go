@@ -7,6 +7,6 @@ type ProfileRequest struct {
 
 // ProfileResponse - Returns the profile for the logged-in user
 type ProfileResponse struct {
-	Fields map[string]string `json:"fields"`
-	Err    string            `json:"err,omitempty"`
+	Profile map[string]string `json:"profile,omitempty"`
+	Err     string            `json:"err,omitempty"`
 }
