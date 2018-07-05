@@ -2,7 +2,6 @@ package api
 
 // RefreshRequest - Request to refresh the JWT token
 type RefreshRequest struct {
-	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
 

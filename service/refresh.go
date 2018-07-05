@@ -14,33 +14,14 @@ func (Auth) Refresh(_ context.Context, req api.RefreshRequest) (api.RefreshRespo
 	var response api.RefreshResponse
 	var u *user.User
 
-	// Validate the access token and get user info
-	u1, err := ParseToken(req.AccessToken)
-	if err == ErrorInvalidToken {
-		response.Err = err.Error()
-		return response, nil
-	}
-
-	// Check by looking for Blacklisted tokens in Cache
-	if _, found := BlacklistTokens.Get(req.AccessToken); found {
-		response.Err = ErrorInvalidToken.Error()
-		return response, nil
-	}
-
 	// Validate the refresh token and get user info
-	u2, err := ParseToken(req.RefreshToken)
+	u, err := ParseToken(req.RefreshToken)
 	if err == ErrorInvalidToken {
 		response.Err = ErrorInvalidToken.Error()
 		return response, nil
 	}
 
-	// Check if both these tokens belongs to same User
-	if u1.Username != u2.Username {
-		response.Err = ErrorInvalidToken.Error()
-		return response, nil
-	}
-
-	u, err = user.Read(u1.Username)
+	u, err = user.Read(u.Username)
 	if err != nil || u.Confirmed != true {
 		response.Err = ErrorNotFound.Error()
 		return response, nil
