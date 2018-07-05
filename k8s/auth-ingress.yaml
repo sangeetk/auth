@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: auth
+spec:
+  rules:
+  - host: auth.spiritualhub.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: auth
+          servicePort: 80

@@ -1,0 +1,30 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: auth
+  labels:
+    app: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: auth
+        image: reg.urantiatech.com/auth/auth
+        ports:
+        - containerPort: 9999
+        volumeMounts:
+        - name: nfs-auth
+          mountPath: "/db"
+      volumes:
+      - name: nfs-db
+        persistentVolumeClaim:
+          claimName: nfs-db
