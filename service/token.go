@@ -9,8 +9,8 @@ import (
 )
 
 // ParseToken - Parses the access token and extract username, roles etc
-func ParseToken(tokenString string) (user.User, error) {
-	var u user.User
+func ParseToken(tokenString string) (*user.User, error) {
+	var u = new(user.User)
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:

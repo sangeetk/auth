@@ -10,6 +10,21 @@ import (
 	"github.com/urantiatech/kit/endpoint"
 )
 
+func makeAuthorizationEndpoint(svc service.Auth) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(api.AuthorizationRequest)
+		return svc.Authorize(ctx, req)
+	}
+}
+
+func decodeAuthorizationRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request api.AuthorizationRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
+}
+
 func makeRegisterEndpoint(svc service.Auth) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.RegisterRequest)
@@ -34,6 +49,21 @@ func makeUpdateEndpoint(svc service.Auth) endpoint.Endpoint {
 
 func decodeUpdateRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request api.UpdateRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
+}
+
+func makeDeleteEndpoint(svc service.Auth) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(api.DeleteRequest)
+		return svc.Delete(ctx, req)
+	}
+}
+
+func decodeDeleteRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request api.DeleteRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}
@@ -139,6 +169,21 @@ func makeRecoverEndpoint(svc service.Auth) endpoint.Endpoint {
 
 func decodeRecoverRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request api.RecoverRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
+}
+
+func makeResetEndpoint(svc service.Auth) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(api.ResetRequest)
+		return svc.Reset(ctx, req)
+	}
+}
+
+func decodeResetRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request api.ResetRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}

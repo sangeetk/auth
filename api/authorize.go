@@ -1,13 +1,14 @@
 package api
 
-// AuthorizationRequest - Authorize agains the role
+// AuthorizationRequest - Authorize against the role
 type AuthorizationRequest struct {
 	AccessToken string `json:"access_token"`
+	Domain      string `json:"domain"`
 	Role        string `json:"role"`
 }
 
-// AuthorizationResponse - Returns Unauthrize on error
+// AuthorizationResponse - Returns Token or  error
 type AuthorizationResponse struct {
-	AuthToken string `json:"auth_token"`
+	Authorize bool   `json:"authorize"`
 	Err       string `json:"err,omitempty"`
 }

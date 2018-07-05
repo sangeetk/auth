@@ -6,13 +6,13 @@ import (
 
 // UpdateRequest - Update the existing user
 type UpdateRequest struct {
-	AccessToken string            `json:"access_token"`
-	Username    string            `json:"username"`
-	Name        string            `json:"name"`
-	FirstName   string            `json:"first_name"`
-	LastName    string            `json:"last_name"`
-	Email       string            `json:"email"`
-	Password    string            `json:"password"`
+	AccessToken string `json:"access_token"`
+	Password    string `json:"password"`
+	Name        string `json:"name"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	// Email       string            `json:"email"`
+	NewPassword string            `json:"new_password"`
 	Birthday    time.Time         `json:"birthday"`
 	Domain      string            `json:"domain"`
 	Roles       []string          `json:"roles"`

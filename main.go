@@ -56,15 +56,18 @@ func main() {
 	r := mux.NewRouter()
 
 	// r.Handle("/", h.NewServer(makeLoginEndpoint(svc), decodeLoginRequest, encodeResponse))
+	r.Handle("/authorize", h.NewServer(makeAuthorizationEndpoint(svc), decodeAuthorizationRequest, encodeResponse))
 	r.Handle("/login", h.NewServer(makeLoginEndpoint(svc), decodeLoginRequest, encodeResponse))
 	r.Handle("/logout", h.NewServer(makeLogoutEndpoint(svc), decodeLogoutRequest, encodeResponse))
 	r.Handle("/register", h.NewServer(makeRegisterEndpoint(svc), decodeRegisterRequest, encodeResponse))
 	r.Handle("/update", h.NewServer(makeUpdateEndpoint(svc), decodeUpdateRequest, encodeResponse))
+	r.Handle("/delete", h.NewServer(makeDeleteEndpoint(svc), decodeDeleteRequest, encodeResponse))
 	r.Handle("/identify", h.NewServer(makeIdentifyEndpoint(svc), decodeIdentifyRequest, encodeResponse))
 	r.Handle("/profile", h.NewServer(makeProfileEndpoint(svc), decodeProfileRequest, encodeResponse))
 	r.Handle("/refresh", h.NewServer(makeRefreshEndpoint(svc), decodeRefreshRequest, encodeResponse))
 	r.Handle("/confirm", h.NewServer(makeConfirmEndpoint(svc), decodeConfirmRequest, encodeResponse))
 	r.Handle("/recover", h.NewServer(makeRecoverEndpoint(svc), decodeRecoverRequest, encodeResponse))
+	r.Handle("/reset", h.NewServer(makeResetEndpoint(svc), decodeResetRequest, encodeResponse))
 
 	http.ListenAndServe(fmt.Sprintf(":%d", port), r)
 

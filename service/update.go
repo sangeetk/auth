@@ -14,15 +14,21 @@ func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse
 	var response = api.UpdateResponse{}
 
 	// Validate the token and get user info
-	_, err := ParseToken(req.AccessToken)
+	u, err := ParseToken(req.AccessToken)
 	if err == ErrorInvalidToken {
 		response.Err = err.Error()
 		return response, nil
 	}
 
-	u, err := user.Read(req.Username)
+	u, err = user.Read(u.Username)
 	if err != nil || u.Confirmed != true {
 		response.Err = ErrorNotFound.Error()
+		return response, nil
+	}
+
+	// Check password
+	if bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(req.Password)) != nil {
+		response.Err = ErrorInvalidPassword.Error()
 		return response, nil
 	}
 
@@ -36,14 +42,16 @@ func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse
 	if req.LastName != "" {
 		u.LastName = req.LastName
 	}
-	if req.Email != "" {
-		u.Email = req.Email
-	}
+	/*
+		if req.Email != "" {
+			u.Email = req.Email
+		}
+	*/
 	if !req.Birthday.IsZero() {
 		u.Birthday = req.Birthday
 	}
-	if req.Password != "" {
-		PasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), 11)
+	if req.NewPassword != "" {
+		PasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), 11)
 		if err != nil {
 			log.Println("Bcrypt error:", err.Error())
 		}

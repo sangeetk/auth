@@ -28,7 +28,7 @@ type User struct {
 	// Profile
 	Profile api.Profile `json:"profile"`
 
-	// Confirm
+	// User status
 	ConfirmToken string `json:"confirm_token"`
 	Confirmed    bool   `json:"confirmed"`
 

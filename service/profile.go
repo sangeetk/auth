@@ -26,7 +26,7 @@ func (a Auth) Profile(ctx context.Context, req api.ProfileRequest) (api.ProfileR
 
 	if found {
 		u, err := user.Read(u.Username)
-		if err != nil {
+		if err != nil || !u.Confirmed {
 			response.Err = ErrorNotFound.Error()
 			return response, nil
 		}

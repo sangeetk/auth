@@ -52,6 +52,9 @@ var ErrorExpiredToken = errors.New("Expired Token")
 // ErrorInvalidLogin - Invalid Login
 var ErrorInvalidLogin = errors.New("Invalid Login")
 
+// ErrorInvalidPassword - Invalid Password
+var ErrorInvalidPassword = errors.New("Invalid Password")
+
 // ErrorInvalidRequest - Invalid Request
 var ErrorInvalidRequest = errors.New("Invalid Request")
 

@@ -16,7 +16,7 @@ func (Auth) Identify(_ context.Context, req api.IdentifyRequest) (api.IdentifyRe
 		return response, nil
 	}
 
-	// Check by looking for Blacklisted tokens in Redis Cache
+	// Check by looking for Blacklisted tokens in Cache
 	if _, found := BlacklistTokens.Get(req.AccessToken); found {
 		response.Err = ErrorInvalidToken.Error()
 		return response, nil
