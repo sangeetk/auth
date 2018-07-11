@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"net/http"
 	"time"
 
 	"git.urantiatech.com/auth/auth/api"
@@ -63,3 +65,9 @@ var ErrorUnknown = errors.New("Unknown Error")
 
 // AuthMiddleware - Service Middleware is a chainable behavior modifier for AuthService.
 type AuthMiddleware func(AuthService) AuthService
+
+// EncodeResponse -
+func EncodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	return json.NewEncoder(w).Encode(response)
+}

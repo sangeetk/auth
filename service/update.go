@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"log"
+	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/user"
+	"github.com/urantiatech/kit/endpoint"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -98,4 +101,21 @@ func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse
 	u.Save()
 
 	return response, nil
+}
+
+// MakeUpdateEndpoint -
+func MakeUpdateEndpoint(svc Auth) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(api.UpdateRequest)
+		return svc.Update(ctx, req)
+	}
+}
+
+// DecodeUpdateRequest -
+func DecodeUpdateRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request api.UpdateRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
 }

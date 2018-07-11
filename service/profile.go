@@ -2,9 +2,12 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/user"
+	"github.com/urantiatech/kit/endpoint"
 )
 
 // Profile - Returns user profile
@@ -46,4 +49,21 @@ func (a Auth) Profile(ctx context.Context, req api.ProfileRequest) (api.ProfileR
 		return response, nil
 	}
 	return api.ProfileResponse{Err: ErrorNotFound.Error()}, nil
+}
+
+// MakeProfileEndpoint -
+func MakeProfileEndpoint(svc Auth) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(api.ProfileRequest)
+		return svc.Profile(ctx, req)
+	}
+}
+
+// DecodeProfileRequest -
+func DecodeProfileRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request api.ProfileRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
 }

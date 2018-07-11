@@ -2,9 +2,12 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/user"
+	"github.com/urantiatech/kit/endpoint"
 )
 
 // Authorize - Sends Auth Token if user has "role"
@@ -42,4 +45,21 @@ func (Auth) Authorize(_ context.Context, req api.AuthorizationRequest) (api.Auth
 	}
 
 	return response, nil
+}
+
+// MakeAuthorizationEndpoint -
+func MakeAuthorizationEndpoint(svc Auth) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(api.AuthorizationRequest)
+		return svc.Authorize(ctx, req)
+	}
+}
+
+// DecodeAuthorizationRequest -
+func DecodeAuthorizationRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request api.AuthorizationRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
 }

@@ -2,11 +2,14 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
 	"time"
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/user"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/urantiatech/kit/endpoint"
 )
 
 // Refresh - Generates a new token and extends existing session
@@ -59,4 +62,21 @@ func (Auth) Refresh(_ context.Context, req api.RefreshRequest) (api.RefreshRespo
 	}
 
 	return response, nil
+}
+
+// MakeRefreshEndpoint -
+func MakeRefreshEndpoint(svc Auth) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(api.RefreshRequest)
+		return svc.Refresh(ctx, req)
+	}
+}
+
+// DecodeRefreshRequest -
+func DecodeRefreshRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request api.RefreshRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
 }

@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
 	"time"
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/user"
+	"github.com/urantiatech/kit/endpoint"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -37,4 +40,21 @@ func (Auth) Delete(_ context.Context, req api.DeleteRequest) (api.DeleteResponse
 	u.Save()
 
 	return response, nil
+}
+
+// MakeDeleteEndpoint -
+func MakeDeleteEndpoint(svc Auth) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(api.DeleteRequest)
+		return svc.Delete(ctx, req)
+	}
+}
+
+// DecodeDeleteRequest -
+func DecodeDeleteRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request api.DeleteRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return request, nil
 }

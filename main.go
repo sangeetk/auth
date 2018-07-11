@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"git.urantiatech.com/auth/auth/service"
+	s "git.urantiatech.com/auth/auth/service"
 	"git.urantiatech.com/auth/auth/user"
 	"github.com/gorilla/mux"
 	"github.com/patrickmn/go-cache"
@@ -18,6 +18,7 @@ import (
 )
 
 func main() {
+
 	var port int
 	var key string
 	flag.IntVar(&port, "port", 9999, "Port for running the UI")
@@ -39,35 +40,35 @@ func main() {
 	}
 
 	if key == "NEW" {
-		service.SigningKey = []byte(service.RandomToken(16))
+		s.SigningKey = []byte(s.RandomToken(16))
 	} else if key != "" {
-		service.SigningKey = []byte(key)
+		s.SigningKey = []byte(key)
 	}
-	log.Println("SIGNING_KEY: ", string(service.SigningKey))
+	log.Println("SIGNING_KEY: ", string(s.SigningKey))
 
 	// Create a cache with TTL for storing logged-out tokens
-	service.AccessTokenValidity = 1 * time.Hour
-	service.RefreshTokenValidity = 24 * time.Hour
-	service.BlacklistTokens = cache.New(service.AccessTokenValidity, 2*service.AccessTokenValidity)
+	s.AccessTokenValidity = 1 * time.Hour
+	s.RefreshTokenValidity = 24 * time.Hour
+	s.BlacklistTokens = cache.New(s.AccessTokenValidity, 2*s.AccessTokenValidity)
 
-	var svc service.Auth
-	svc = service.Auth{}
+	var svc s.Auth
+	svc = s.Auth{}
 
 	r := mux.NewRouter()
 
-	// r.Handle("/", h.NewServer(makeLoginEndpoint(svc), decodeLoginRequest, encodeResponse))
-	r.Handle("/authorize", h.NewServer(makeAuthorizationEndpoint(svc), decodeAuthorizationRequest, encodeResponse))
-	r.Handle("/login", h.NewServer(makeLoginEndpoint(svc), decodeLoginRequest, encodeResponse))
-	r.Handle("/logout", h.NewServer(makeLogoutEndpoint(svc), decodeLogoutRequest, encodeResponse))
-	r.Handle("/register", h.NewServer(makeRegisterEndpoint(svc), decodeRegisterRequest, encodeResponse))
-	r.Handle("/update", h.NewServer(makeUpdateEndpoint(svc), decodeUpdateRequest, encodeResponse))
-	r.Handle("/delete", h.NewServer(makeDeleteEndpoint(svc), decodeDeleteRequest, encodeResponse))
-	r.Handle("/identify", h.NewServer(makeIdentifyEndpoint(svc), decodeIdentifyRequest, encodeResponse))
-	r.Handle("/profile", h.NewServer(makeProfileEndpoint(svc), decodeProfileRequest, encodeResponse))
-	r.Handle("/refresh", h.NewServer(makeRefreshEndpoint(svc), decodeRefreshRequest, encodeResponse))
-	r.Handle("/confirm", h.NewServer(makeConfirmEndpoint(svc), decodeConfirmRequest, encodeResponse))
-	r.Handle("/recover", h.NewServer(makeRecoverEndpoint(svc), decodeRecoverRequest, encodeResponse))
-	r.Handle("/reset", h.NewServer(makeResetEndpoint(svc), decodeResetRequest, encodeResponse))
+	// r.Handle("/", h.NewServer(s.MakeLoginEndpoint(svc), s.DecodeLoginRequest, s.EncodeResponse))
+	r.Handle("/authorize", h.NewServer(s.MakeAuthorizationEndpoint(svc), s.DecodeAuthorizationRequest, s.EncodeResponse))
+	r.Handle("/login", h.NewServer(s.MakeLoginEndpoint(svc), s.DecodeLoginRequest, s.EncodeResponse))
+	r.Handle("/logout", h.NewServer(s.MakeLogoutEndpoint(svc), s.DecodeLogoutRequest, s.EncodeResponse))
+	r.Handle("/register", h.NewServer(s.MakeRegisterEndpoint(svc), s.DecodeRegisterRequest, s.EncodeResponse))
+	r.Handle("/update", h.NewServer(s.MakeUpdateEndpoint(svc), s.DecodeUpdateRequest, s.EncodeResponse))
+	r.Handle("/delete", h.NewServer(s.MakeDeleteEndpoint(svc), s.DecodeDeleteRequest, s.EncodeResponse))
+	r.Handle("/identify", h.NewServer(s.MakeIdentifyEndpoint(svc), s.DecodeIdentifyRequest, s.EncodeResponse))
+	r.Handle("/profile", h.NewServer(s.MakeProfileEndpoint(svc), s.DecodeProfileRequest, s.EncodeResponse))
+	r.Handle("/refresh", h.NewServer(s.MakeRefreshEndpoint(svc), s.DecodeRefreshRequest, s.EncodeResponse))
+	r.Handle("/confirm", h.NewServer(s.MakeConfirmEndpoint(svc), s.DecodeConfirmRequest, s.EncodeResponse))
+	r.Handle("/recover", h.NewServer(s.MakeRecoverEndpoint(svc), s.DecodeRecoverRequest, s.EncodeResponse))
+	r.Handle("/reset", h.NewServer(s.MakeResetEndpoint(svc), s.DecodeResetRequest, s.EncodeResponse))
 
 	http.ListenAndServe(fmt.Sprintf(":%d", port), r)
 
