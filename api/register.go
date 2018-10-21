@@ -1,7 +1,12 @@
 package api
 
 import (
+	"context"
+	"log"
+	"net/url"
 	"time"
+
+	ht "github.com/urantiatech/kit/transport/http"
 )
 
 // Address - address fields
@@ -37,4 +42,20 @@ type RegisterRequest struct {
 type RegisterResponse struct {
 	ConfirmToken string `json:"confirm_token,omitempty"`
 	Err          string `json:"err,omitempty"`
+}
+
+// Register - registers a new user
+func (a *AuthClient) Register(req *RegisterRequest) (*RegisterResponse, error) {
+	ctx := context.Background()
+	tgt, err := url.Parse("http://" + a.DNS + "/register")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	endPoint := ht.NewClient("POST", tgt, encodeRequest, decodeResponse).Endpoint()
+	resp, err := endPoint(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	response := resp.(RegisterResponse)
+	return &response, nil
 }

@@ -21,9 +21,9 @@ func main() {
 
 	var port int
 	var key string
-	flag.IntVar(&port, "port", 9999, "Port for running the UI")
+	flag.IntVar(&port, "port", 8080, "Port number")
 	flag.StringVar(&key, "key", "NEW", "Signing key")
-	flag.StringVar(&user.DBPath, "dbpath", "db", "Directory for storing user database")
+	flag.StringVar(&user.DBPath, "dbpath", "db", "User database directory")
 	flag.Parse()
 
 	if os.Getenv("PORT") != "" {
@@ -57,7 +57,7 @@ func main() {
 	r := mux.NewRouter()
 
 	// r.Handle("/", h.NewServer(s.MakeLoginEndpoint(svc), s.DecodeLoginRequest, s.EncodeResponse))
-	r.Handle("/authorize", h.NewServer(s.MakeAuthorizationEndpoint(svc), s.DecodeAuthorizationRequest, s.EncodeResponse))
+	r.Handle("/authorize", h.NewServer(s.MakeAuthorizeEndpoint(svc), s.DecodeAuthorizeRequest, s.EncodeResponse))
 	r.Handle("/login", h.NewServer(s.MakeLoginEndpoint(svc), s.DecodeLoginRequest, s.EncodeResponse))
 	r.Handle("/logout", h.NewServer(s.MakeLogoutEndpoint(svc), s.DecodeLogoutRequest, s.EncodeResponse))
 	r.Handle("/register", h.NewServer(s.MakeRegisterEndpoint(svc), s.DecodeRegisterRequest, s.EncodeResponse))

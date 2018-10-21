@@ -11,8 +11,8 @@ import (
 )
 
 // Authorize - Sends Auth Token if user has "role"
-func (Auth) Authorize(_ context.Context, req api.AuthorizationRequest) (api.AuthorizationResponse, error) {
-	var response = api.AuthorizationResponse{Authorize: false}
+func (Auth) Authorize(_ context.Context, req api.AuthorizeRequest) (api.AuthorizeResponse, error) {
+	var response = api.AuthorizeResponse{Authorize: false}
 	var u *user.User
 
 	// Validate the token and get user info
@@ -47,17 +47,17 @@ func (Auth) Authorize(_ context.Context, req api.AuthorizationRequest) (api.Auth
 	return response, nil
 }
 
-// MakeAuthorizationEndpoint -
-func MakeAuthorizationEndpoint(svc Auth) endpoint.Endpoint {
+// MakeAuthorizeEndpoint -
+func MakeAuthorizeEndpoint(svc Auth) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(api.AuthorizationRequest)
+		req := request.(api.AuthorizeRequest)
 		return svc.Authorize(ctx, req)
 	}
 }
 
-// DecodeAuthorizationRequest -
-func DecodeAuthorizationRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var request api.AuthorizationRequest
+// DecodeAuthorizeRequest -
+func DecodeAuthorizeRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request api.AuthorizeRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}
