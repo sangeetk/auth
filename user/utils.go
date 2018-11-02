@@ -29,6 +29,6 @@ func BaseDir(u string) string {
 func Path(u string) string {
 	hash := Hash(u)
 	path := BaseDir(u)
-	path += "/" + hash + ".db"
+	path += "/" + hash + ".json"
 	return path
 }

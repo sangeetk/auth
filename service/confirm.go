@@ -11,10 +11,27 @@ import (
 )
 
 // Confirm - Activates the user account after confirmation
-func (Auth) Confirm(_ context.Context, req api.ConfirmRequest) (api.ConfirmResponse, error) {
+func (a Auth) Confirm(ctx context.Context, req api.ConfirmRequest) (api.ConfirmResponse, error) {
 	var response api.ConfirmResponse
+	var u user.User
+	var found = false
+	var err error
 
-	user, err := user.Read(req.Username)
+	if req.ConfirmToken != "" {
+		identify := api.IdentifyRequest{AccessToken: req.ConfirmToken}
+		user, err := a.Identify(ctx, identify)
+		if err == nil {
+			found = true
+			u.Username = user.Username
+		}
+	}
+	if !found {
+		response.Err = ErrorInvalidToken.Error()
+		return response, nil
+	}
+
+	// Read user details
+	user, err := user.Read(u.Username)
 	if err != nil || user.ConfirmToken != req.ConfirmToken || user.Confirmed != false {
 		response.Err = ErrorInvalidToken.Error()
 		return response, nil

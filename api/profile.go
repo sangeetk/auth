@@ -2,7 +2,9 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"log"
+	"net/http"
 	"net/url"
 	"time"
 
@@ -25,22 +27,31 @@ type ProfileResponse struct {
 	InitialDomain string              `json:"initial_domain"`
 	Roles         map[string][]string `json:"roles"`
 	Address       Address             `json:"address"`
-	Profile       Profile             `json:"profile"`
+	Profile       UserProfile         `json:"profile"`
 	Err           string              `json:"err,omitempty"`
 }
 
 // Profile - returns the full profile of the user
-func (a *AuthClient) Profile(req *ProfileRequest) (*ProfileResponse, error) {
+func Profile(req *ProfileRequest, dns string) (*ProfileResponse, error) {
 	ctx := context.Background()
-	tgt, err := url.Parse("http://" + a.DNS + "/profile")
+	tgt, err := url.Parse("http://" + dns + "/profile")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	endPoint := ht.NewClient("POST", tgt, encodeRequest, decodeResponse).Endpoint()
+	endPoint := ht.NewClient("POST", tgt, encodeRequest, decodeProfileResponse).Endpoint()
 	resp, err := endPoint(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	response := resp.(ProfileResponse)
 	return &response, nil
+}
+
+// decodeProfileResponse decodes the response from the service
+func decodeProfileResponse(ctx context.Context, r *http.Response) (interface{}, error) {
+	var response ProfileResponse
+	if err := json.NewDecoder(r.Body).Decode(&response); err != nil {
+		return nil, err
+	}
+	return response, nil
 }

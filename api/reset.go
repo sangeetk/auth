@@ -2,7 +2,9 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"log"
+	"net/http"
 	"net/url"
 
 	ht "github.com/urantiatech/kit/transport/http"
@@ -21,17 +23,26 @@ type ResetResponse struct {
 }
 
 // Reset - resets the password
-func (a *AuthClient) Reset(req *ResetRequest) (*ResetResponse, error) {
+func Reset(req *ResetRequest, dns string) (*ResetResponse, error) {
 	ctx := context.Background()
-	tgt, err := url.Parse("http://" + a.DNS + "/reset")
+	tgt, err := url.Parse("http://" + dns + "/reset")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	endPoint := ht.NewClient("POST", tgt, encodeRequest, decodeResponse).Endpoint()
+	endPoint := ht.NewClient("POST", tgt, encodeRequest, decodeResetResponse).Endpoint()
 	resp, err := endPoint(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	response := resp.(ResetResponse)
 	return &response, nil
+}
+
+// decodeResetResponse decodes the response from the service
+func decodeResetResponse(ctx context.Context, r *http.Response) (interface{}, error) {
+	var response ResetResponse
+	if err := json.NewDecoder(r.Body).Decode(&response); err != nil {
+		return nil, err
+	}
+	return response, nil
 }

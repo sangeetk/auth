@@ -15,22 +15,33 @@ import (
 // Update - Updates the user
 func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse, error) {
 	var response = api.UpdateResponse{}
+	var u *user.User
+	var err error
 
-	// Validate the token and get user info
-	u, err := ParseToken(req.AccessToken)
+	log.Println("UpdateToken: ", req.UpdateToken)
+	log.Println("AccessToken: ", req.AccessToken)
+
+	// UpdateToken takes priority over AccessToken
+	if req.UpdateToken != "" {
+		u, err = ParseToken(req.UpdateToken)
+	} else {
+		u, err = ParseToken(req.AccessToken)
+	}
 	if err == ErrorInvalidToken {
+		log.Println(err.Error())
 		response.Err = err.Error()
 		return response, nil
 	}
 
+	// Ignore u.Confirmed if UpdateToken is provided
 	u, err = user.Read(u.Username)
-	if err != nil || u.Confirmed != true {
+	if (err != nil) || (u.Confirmed == false && req.UpdateToken == "") {
 		response.Err = ErrorNotFound.Error()
 		return response, nil
 	}
 
-	// Check password
-	if bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(req.Password)) != nil {
+	// Don't check password if UpdateToken is provided
+	if req.UpdateToken == "" && bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(req.Password)) != nil {
 		response.Err = ErrorInvalidPassword.Error()
 		return response, nil
 	}
@@ -99,7 +110,7 @@ func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse
 	}
 
 	u.Save()
-
+	response.UpdateToken = req.UpdateToken
 	return response, nil
 }
 

@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/user"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/urantiatech/kit/endpoint"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -26,12 +28,26 @@ func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterRe
 		log.Println("Bcrypt error:", err.Error())
 	}
 
-	// Generate random confirm token
-	ConfirmToken := RandomToken(16)
-
 	// Use email as username if empty
 	if req.Username == "" {
 		req.Username = req.Email
+	}
+
+	// Create the Confirmation token
+	confirmToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": req.Username,
+		"fname":    req.FirstName,
+		"lname":    req.LastName,
+		"email":    req.Email,
+		"nbf":      time.Now().Unix(),
+		"exp":      time.Now().Add(24 * 7 * time.Hour).Unix(),
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	response.ConfirmToken, err = confirmToken.SignedString(SigningKey)
+	if err != nil {
+		response.Err = err.Error()
+		return response, nil
 	}
 
 	var u = user.User{
@@ -43,7 +59,7 @@ func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterRe
 		Password:      PasswordHash,
 		Birthday:      req.Birthday,
 		InitialDomain: req.Domain,
-		ConfirmToken:  ConfirmToken,
+		ConfirmToken:  response.ConfirmToken,
 		Confirmed:     false,
 	}
 
@@ -58,7 +74,21 @@ func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterRe
 		return response, nil
 	}
 
-	response.ConfirmToken = ConfirmToken
+	// Create an Update Token
+	updateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": u.Username,
+		"fname":    u.FirstName,
+		"lname":    u.LastName,
+		"email":    u.Email,
+		"nbf":      time.Now().Unix(),
+		"exp":      time.Now().Add(5 * time.Minute).Unix(),
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	response.UpdateToken, err = updateToken.SignedString(SigningKey)
+	if err != nil {
+		response.Err = err.Error()
+	}
 	return response, nil
 }
 

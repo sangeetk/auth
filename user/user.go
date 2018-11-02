@@ -26,7 +26,7 @@ type User struct {
 	Address api.Address `json:"address"`
 
 	// Profile
-	Profile api.Profile `json:"profile"`
+	Profile api.UserProfile `json:"profile"`
 
 	// User status
 	ConfirmToken string `json:"confirm_token"`
