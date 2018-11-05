@@ -11,9 +11,9 @@ import (
 	"github.com/urantiatech/kit/endpoint"
 )
 
-// Recover - Resets the password
-func (Auth) Recover(_ context.Context, req api.RecoverRequest) (api.RecoverResponse, error) {
-	var response api.RecoverResponse
+// Forgot - Resets the password
+func (Auth) Forgot(_ context.Context, req api.ForgotRequest) (api.ForgotResponse, error) {
+	var response api.ForgotResponse
 
 	if req.Username == "" {
 		response.Err = ErrorInvalidRequest.Error()
@@ -26,27 +26,27 @@ func (Auth) Recover(_ context.Context, req api.RecoverRequest) (api.RecoverRespo
 		return response, nil
 	}
 
-	if u.RecoverToken == "" || u.RecoverTokenExpiry.Unix() < time.Now().Unix() {
-		u.RecoverToken = RandomToken(16)
-		u.RecoverTokenExpiry = time.Now().Add(time.Hour * 24)
+	if u.ForgotToken == "" || u.ForgotTokenExpiry.Unix() < time.Now().Unix() {
+		u.ForgotToken = RandomToken(16)
+		u.ForgotTokenExpiry = time.Now().Add(time.Hour * 24)
 		u.Save()
 	}
-	response.RecoverToken = u.RecoverToken
+	response.ForgotToken = u.ForgotToken
 
 	return response, nil
 }
 
-// MakeRecoverEndpoint -
-func MakeRecoverEndpoint(svc Auth) endpoint.Endpoint {
+// MakeForgotEndpoint -
+func MakeForgotEndpoint(svc Auth) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(api.RecoverRequest)
-		return svc.Recover(ctx, req)
+		req := request.(api.ForgotRequest)
+		return svc.Forgot(ctx, req)
 	}
 }
 
-// DecodeRecoverRequest -
-func DecodeRecoverRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var request api.RecoverRequest
+// DecodeForgotRequest -
+func DecodeForgotRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request api.ForgotRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}

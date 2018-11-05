@@ -16,13 +16,13 @@ import (
 func (Auth) Reset(_ context.Context, req api.ResetRequest) (api.ResetResponse, error) {
 	var response api.ResetResponse
 
-	if req.RecoverToken == "" || req.Password == "" {
+	if req.ForgotToken == "" || req.Password == "" {
 		response.Err = ErrorInvalidRequest.Error()
 		return response, nil
 	}
 
 	u, err := user.Read(req.Username)
-	if err != nil || req.RecoverToken != u.RecoverToken || u.RecoverTokenExpiry.Unix() < time.Now().Unix() {
+	if err != nil || req.ForgotToken != u.ForgotToken || u.ForgotTokenExpiry.Unix() < time.Now().Unix() {
 		response.Err = ErrorExpiredToken.Error()
 		return response, nil
 	}
@@ -32,8 +32,8 @@ func (Auth) Reset(_ context.Context, req api.ResetRequest) (api.ResetResponse, e
 		response.Err = ErrorUnknown.Error()
 		return response, nil
 	}
-	u.RecoverToken = ""
-	u.RecoverTokenExpiry = time.Unix(0, 0)
+	u.ForgotToken = ""
+	u.ForgotTokenExpiry = time.Unix(0, 0)
 	u.Password = PasswordHash
 	u.Save()
 

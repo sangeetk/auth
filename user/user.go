@@ -37,9 +37,9 @@ type User struct {
 	AttemptTime   time.Time `json:"attempt_time"`
 	Locked        time.Time `json:"locked"`
 
-	// Recover
-	RecoverToken       string    `json:"recover_token"`
-	RecoverTokenExpiry time.Time `json:"recover_token_expiry"`
+	// Forgot
+	ForgotToken       string    `json:"forgot_token"`
+	ForgotTokenExpiry time.Time `json:"forgot_token_expiry"`
 
 	// Timestamps
 	CreatedAt time.Time `json:"created_at"`

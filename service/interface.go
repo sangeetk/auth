@@ -32,7 +32,7 @@ type AuthService interface {
 	Profile(context.Context, api.ProfileRequest) (api.ProfileResponse, error)
 	Refresh(context.Context, api.RefreshRequest) (api.RefreshResponse, error)
 	Confirm(context.Context, api.ConfirmRequest) (api.ConfirmResponse, error)
-	Recover(context.Context, api.RecoverRequest) (api.RecoverResponse, error)
+	Forgot(context.Context, api.ForgotRequest) (api.ForgotResponse, error)
 	Update(context.Context, api.UpdateRequest) (api.UpdateResponse, error)
 }
 

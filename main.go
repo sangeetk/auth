@@ -67,7 +67,7 @@ func main() {
 	r.Handle("/profile", h.NewServer(s.MakeProfileEndpoint(svc), s.DecodeProfileRequest, s.EncodeResponse))
 	r.Handle("/refresh", h.NewServer(s.MakeRefreshEndpoint(svc), s.DecodeRefreshRequest, s.EncodeResponse))
 	r.Handle("/confirm", h.NewServer(s.MakeConfirmEndpoint(svc), s.DecodeConfirmRequest, s.EncodeResponse))
-	r.Handle("/recover", h.NewServer(s.MakeRecoverEndpoint(svc), s.DecodeRecoverRequest, s.EncodeResponse))
+	r.Handle("/forgot", h.NewServer(s.MakeForgotEndpoint(svc), s.DecodeForgotRequest, s.EncodeResponse))
 	r.Handle("/reset", h.NewServer(s.MakeResetEndpoint(svc), s.DecodeResetRequest, s.EncodeResponse))
 
 	http.ListenAndServe(fmt.Sprintf(":%d", port), r)

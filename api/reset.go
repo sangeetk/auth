@@ -12,9 +12,9 @@ import (
 
 // ResetRequest - Reset the password
 type ResetRequest struct {
-	Username     string `json:"username"`
-	RecoverToken string `json:"recover_token"` // contains email address
-	Password     string `json:"password"`
+	Username    string `json:"username"`
+	ForgotToken string `json:"forgot_token"`
+	Password    string `json:"password"`
 }
 
 // ResetResponse - Reset password response
