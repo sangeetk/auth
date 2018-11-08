@@ -13,7 +13,7 @@ import (
 )
 
 // Delete - Deletes the user
-func (Auth) Delete(_ context.Context, req api.DeleteRequest) (api.DeleteResponse, error) {
+func (Auth) Delete(ctx context.Context, req api.DeleteRequest) (api.DeleteResponse, error) {
 	var response = api.DeleteResponse{}
 
 	// Validate the token and get user info

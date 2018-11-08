@@ -15,17 +15,12 @@ import (
 )
 
 // Register - Register a new User
-func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterResponse, error) {
+func (Auth) Register(ctx context.Context, req api.RegisterRequest) (api.RegisterResponse, error) {
 	var response = api.RegisterResponse{}
 
-	if req.Username == "" || req.Email == "" || req.Password == "" {
+	if req.Email == "" || req.Password == "" {
 		response.Err = ErrorInvalidRequest.Error()
 		return response, nil
-	}
-
-	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), 11)
-	if err != nil {
-		log.Println("Bcrypt error:", err.Error())
 	}
 
 	// Use email as username if empty
@@ -33,21 +28,9 @@ func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterRe
 		req.Username = req.Email
 	}
 
-	// Create the Confirmation token
-	confirmToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": req.Username,
-		"fname":    req.FirstName,
-		"lname":    req.LastName,
-		"email":    req.Email,
-		"nbf":      time.Now().Unix(),
-		"exp":      time.Now().Add(24 * 7 * time.Hour).Unix(),
-	})
-
-	// Sign and get the complete encoded token as a string using the secret
-	response.ConfirmToken, err = confirmToken.SignedString(SigningKey)
+	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), 11)
 	if err != nil {
-		response.Err = err.Error()
-		return response, nil
+		log.Println("Bcrypt error:", err.Error())
 	}
 
 	var u = user.User{
@@ -59,7 +42,6 @@ func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterRe
 		Password:      PasswordHash,
 		Birthday:      req.Birthday,
 		InitialDomain: req.Domain,
-		ConfirmToken:  response.ConfirmToken,
 		Confirmed:     false,
 	}
 
@@ -74,21 +56,39 @@ func (Auth) Register(_ context.Context, req api.RegisterRequest) (api.RegisterRe
 		return response, nil
 	}
 
+	// Create the Confirmation token
+	confirmToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": req.Username,
+		"nbf":      time.Now().Unix(),
+		"exp":      time.Now().Add(24 * time.Hour).Unix(),
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	response.ConfirmToken, err = confirmToken.SignedString(SigningKey)
+	if err != nil {
+		response.Err = err.Error()
+		return response, nil
+	}
+
 	// Create an Update Token
 	updateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": u.Username,
-		"fname":    u.FirstName,
-		"lname":    u.LastName,
-		"email":    u.Email,
 		"nbf":      time.Now().Unix(),
-		"exp":      time.Now().Add(5 * time.Minute).Unix(),
+		"exp":      time.Now().Add(1 * time.Hour).Unix(),
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
 	response.UpdateToken, err = updateToken.SignedString(SigningKey)
 	if err != nil {
 		response.Err = err.Error()
+		return response, nil
 	}
+
+	response.Username = u.Username
+	response.FirstName = u.FirstName
+	response.LastName = u.LastName
+	response.Email = u.Email
+
 	return response, nil
 }
 

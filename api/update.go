@@ -13,13 +13,12 @@ import (
 
 // UpdateRequest - Update the existing user
 type UpdateRequest struct {
-	AccessToken string `json:"access_token"`
-	UpdateToken string `json:"update_token"`
-	Password    string `json:"password"`
-	Name        string `json:"name"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	// Email       string            `json:"email"`
+	AccessToken string            `json:"access_token"`
+	UpdateToken string            `json:"update_token"`
+	Password    string            `json:"password"`
+	Name        string            `json:"name"`
+	FirstName   string            `json:"first_name"`
+	LastName    string            `json:"last_name"`
 	NewPassword string            `json:"new_password"`
 	Birthday    time.Time         `json:"birthday"`
 	Domain      string            `json:"domain"`
@@ -31,6 +30,10 @@ type UpdateRequest struct {
 // UpdateResponse - Returns error if update fails
 type UpdateResponse struct {
 	UpdateToken string `json:"update_token"`
+	Username    string `json:"username"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	Email       string `json:"email"`
 	Err         string `json:"err,omitempty"`
 }
 

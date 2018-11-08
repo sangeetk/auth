@@ -8,11 +8,12 @@ import (
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/user"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/urantiatech/kit/endpoint"
 )
 
 // Forgot - Resets the password
-func (Auth) Forgot(_ context.Context, req api.ForgotRequest) (api.ForgotResponse, error) {
+func (Auth) Forgot(ctx context.Context, req api.ForgotRequest) (api.ForgotResponse, error) {
 	var response api.ForgotResponse
 
 	if req.Username == "" {
@@ -26,12 +27,23 @@ func (Auth) Forgot(_ context.Context, req api.ForgotRequest) (api.ForgotResponse
 		return response, nil
 	}
 
-	if u.ForgotToken == "" || u.ForgotTokenExpiry.Unix() < time.Now().Unix() {
-		u.ForgotToken = RandomToken(16)
-		u.ForgotTokenExpiry = time.Now().Add(time.Hour * 24)
-		u.Save()
+	// Create the Forgot token
+	forgotToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": u.Username,
+		"nbf":      time.Now().Unix(),
+		"exp":      time.Now().Add(24 * time.Hour).Unix(),
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	response.ForgotToken, err = forgotToken.SignedString(SigningKey)
+	if err != nil {
+		response.Err = err.Error()
+		return response, nil
 	}
-	response.ForgotToken = u.ForgotToken
+	response.Name = u.Name
+	response.FirstName = u.FirstName
+	response.LastName = u.LastName
+	response.Email = u.Email
 
 	return response, nil
 }

@@ -10,10 +10,10 @@ import (
 )
 
 // Identify - Identify the user based on the AccessToken
-func (Auth) Identify(_ context.Context, req api.IdentifyRequest) (api.IdentifyResponse, error) {
+func (Auth) Identify(ctx context.Context, req api.IdentifyRequest) (api.IdentifyResponse, error) {
 	var response api.IdentifyResponse
 
-	user, err := ParseToken(req.AccessToken)
+	u, err := ParseToken(req.AccessToken)
 	if err != nil {
 		response.Err = err.Error()
 		return response, nil
@@ -26,10 +26,10 @@ func (Auth) Identify(_ context.Context, req api.IdentifyRequest) (api.IdentifyRe
 	}
 
 	// Send the user details
-	response.Username = user.Username
-	response.FirstName = user.FirstName
-	response.LastName = user.LastName
-	response.Email = user.Email
+	response.Username = u.Username
+	response.FirstName = u.FirstName
+	response.LastName = u.LastName
+	response.Email = u.Email
 
 	return response, nil
 }

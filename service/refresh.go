@@ -13,7 +13,7 @@ import (
 )
 
 // Refresh - Generates a new token and extends existing session
-func (Auth) Refresh(_ context.Context, req api.RefreshRequest) (api.RefreshResponse, error) {
+func (Auth) Refresh(ctx context.Context, req api.RefreshRequest) (api.RefreshResponse, error) {
 	var response api.RefreshResponse
 	var u *user.User
 

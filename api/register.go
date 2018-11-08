@@ -44,6 +44,10 @@ type RegisterRequest struct {
 type RegisterResponse struct {
 	ConfirmToken string `json:"confirm_token,omitempty"`
 	UpdateToken  string `json:"update_token,omitempty"`
+	Username     string `json:"username"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Email        string `json:"email"`
 	Err          string `json:"err,omitempty"`
 }
 

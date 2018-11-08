@@ -8,7 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-// ParseToken - Parses the access token and extract username, roles etc
+// ParseToken - Parses the access token and extract username etc
 func ParseToken(tokenString string) (*user.User, error) {
 	var u = new(user.User)
 
@@ -28,9 +28,15 @@ func ParseToken(tokenString string) (*user.User, error) {
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		u.Username = claims["username"].(string)
-		u.FirstName = claims["fname"].(string)
-		u.LastName = claims["lname"].(string)
-		u.Email = claims["email"].(string)
+		if _, ok := claims["fname"]; ok {
+			u.FirstName = claims["fname"].(string)
+		}
+		if _, ok := claims["lname"]; ok {
+			u.LastName = claims["lname"].(string)
+		}
+		if _, ok := claims["email"]; ok {
+			u.Email = claims["email"].(string)
+		}
 	}
 	return u, nil
 }

@@ -28,18 +28,13 @@ type User struct {
 	// Profile
 	Profile api.UserProfile `json:"profile"`
 
-	// User status
-	ConfirmToken string `json:"confirm_token"`
-	Confirmed    bool   `json:"confirmed"`
+	// User confirmed status
+	Confirmed bool `json:"confirmed"`
 
 	// Lock
 	AttemptNumber int64     `json:"attempt_number"`
 	AttemptTime   time.Time `json:"attempt_time"`
 	Locked        time.Time `json:"locked"`
-
-	// Forgot
-	ForgotToken       string    `json:"forgot_token"`
-	ForgotTokenExpiry time.Time `json:"forgot_token_expiry"`
 
 	// Timestamps
 	CreatedAt time.Time `json:"created_at"`

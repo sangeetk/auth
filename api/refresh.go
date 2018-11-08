@@ -17,8 +17,8 @@ type RefreshRequest struct {
 
 // RefreshResponse - Returns new JWT token on success
 type RefreshResponse struct {
-	NewAccessToken  string `json:"new_access_token,omitempty"`
-	NewRefreshToken string `json:"new_refresh_token,omitempty"`
+	NewAccessToken  string `json:"new_access_token"`
+	NewRefreshToken string `json:"new_refresh_token"`
 	Err             string `json:"err,omitempty"`
 }
 

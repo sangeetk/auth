@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/user"
@@ -13,29 +12,40 @@ import (
 )
 
 // Reset - Resets the password
-func (Auth) Reset(_ context.Context, req api.ResetRequest) (api.ResetResponse, error) {
+func (a Auth) Reset(ctx context.Context, req api.ResetRequest) (api.ResetResponse, error) {
 	var response api.ResetResponse
 
-	if req.ForgotToken == "" || req.Password == "" {
+	if req.ForgotToken == "" || req.NewPassword == "" {
 		response.Err = ErrorInvalidRequest.Error()
 		return response, nil
 	}
 
-	u, err := user.Read(req.Username)
-	if err != nil || req.ForgotToken != u.ForgotToken || u.ForgotTokenExpiry.Unix() < time.Now().Unix() {
-		response.Err = ErrorExpiredToken.Error()
+	identify := api.IdentifyRequest{AccessToken: req.ForgotToken}
+	id, err := a.Identify(ctx, identify)
+	if err == nil || id.Err != "" {
+		response.Err = ErrorInvalidToken.Error()
 		return response, nil
 	}
 
-	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.Password), 11)
+	// Read user details
+	u, err := user.Read(id.Username)
+	if err != nil || u.Confirmed != false {
+		response.Err = ErrorInvalidToken.Error()
+		return response, nil
+	}
+
+	PasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), 11)
 	if err != nil {
 		response.Err = ErrorUnknown.Error()
 		return response, nil
 	}
-	u.ForgotToken = ""
-	u.ForgotTokenExpiry = time.Unix(0, 0)
+
 	u.Password = PasswordHash
 	u.Save()
+
+	response.FirstName = u.FirstName
+	response.LastName = u.LastName
+	response.Email = u.Email
 
 	return response, nil
 }

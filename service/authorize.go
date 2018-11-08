@@ -11,7 +11,7 @@ import (
 )
 
 // Authorize - Sends Auth Token if user has "role"
-func (Auth) Authorize(_ context.Context, req api.AuthorizeRequest) (api.AuthorizeResponse, error) {
+func (Auth) Authorize(ctx context.Context, req api.AuthorizeRequest) (api.AuthorizeResponse, error) {
 	var response = api.AuthorizeResponse{Authorize: false}
 	var u *user.User
 

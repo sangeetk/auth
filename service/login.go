@@ -14,28 +14,28 @@ import (
 )
 
 // Login - Log in the user after credentials are successfully authenticated
-func (Auth) Login(_ context.Context, req api.LoginRequest) (api.LoginResponse, error) {
+func (Auth) Login(ctx context.Context, req api.LoginRequest) (api.LoginResponse, error) {
 	var response api.LoginResponse
 
 	// Get user details
-	user, err := user.Read(req.Username)
-	if err != nil || user.Confirmed != true {
+	u, err := user.Read(req.Username)
+	if err != nil || u.Confirmed != true {
 		response.Err = ErrorInvalidLogin.Error()
 		return response, nil
 	}
 
 	// Check password
-	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
+	if bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(req.Password)) != nil {
 		response.Err = ErrorInvalidLogin.Error()
 		return response, nil
 	}
 
 	// Create an Access JWT Token
 	atoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user.Username,
-		"fname":    user.FirstName,
-		"lname":    user.LastName,
-		"email":    user.Email,
+		"username": u.Username,
+		"fname":    u.FirstName,
+		"lname":    u.LastName,
+		"email":    u.Email,
 		"nbf":      time.Now().Unix(),
 		"exp":      time.Now().Add(AccessTokenValidity).Unix(),
 	})
@@ -48,10 +48,10 @@ func (Auth) Login(_ context.Context, req api.LoginRequest) (api.LoginResponse, e
 
 	// Create an Access JWT Token
 	rtoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user.Username,
-		"fname":    user.FirstName,
-		"lname":    user.LastName,
-		"email":    user.Email,
+		"username": u.Username,
+		"fname":    u.FirstName,
+		"lname":    u.LastName,
+		"email":    u.Email,
 		"nbf":      time.Now().Unix(),
 		"exp":      time.Now().Add(RefreshTokenValidity).Unix(),
 	})
@@ -60,6 +60,11 @@ func (Auth) Login(_ context.Context, req api.LoginRequest) (api.LoginResponse, e
 	if err != nil {
 		response.Err = err.Error()
 	}
+
+	response.Username = u.Username
+	response.FirstName = u.FirstName
+	response.LastName = u.LastName
+	response.Email = u.Email
 
 	return response, nil
 }

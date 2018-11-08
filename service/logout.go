@@ -12,7 +12,7 @@ import (
 )
 
 // Logout - Logouts the current user
-func (Auth) Logout(_ context.Context, req api.LogoutRequest) (api.LogoutResponse, error) {
+func (Auth) Logout(ctx context.Context, req api.LogoutRequest) (api.LogoutResponse, error) {
 	var response api.LogoutResponse
 
 	// Ignore if it is an invalid token

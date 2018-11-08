@@ -10,14 +10,18 @@ import (
 	ht "github.com/urantiatech/kit/transport/http"
 )
 
-// ConfirmRequest - Confirms the new registration
+// ConfirmRequest - Confirms and logs the user in
 type ConfirmRequest struct {
 	ConfirmToken string `json:"confirm_token"`
 }
 
 // ConfirmResponse - Returns error if registration confirmation fails
 type ConfirmResponse struct {
-	Err string `json:"err,omitempty"`
+	Username  string `json:"username"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Err       string `json:"err,omitempty"`
 }
 
 // Confirm - confirms the new user registration

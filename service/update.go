@@ -13,22 +13,18 @@ import (
 )
 
 // Update - Updates the user
-func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse, error) {
+func (Auth) Update(ctx context.Context, req api.UpdateRequest) (api.UpdateResponse, error) {
 	var response = api.UpdateResponse{}
 	var u *user.User
 	var err error
 
-	log.Println("UpdateToken: ", req.UpdateToken)
-	log.Println("AccessToken: ", req.AccessToken)
-
-	// UpdateToken takes priority over AccessToken
+	// UpdateToken takes priority and ignores Confirmed status
 	if req.UpdateToken != "" {
 		u, err = ParseToken(req.UpdateToken)
 	} else {
 		u, err = ParseToken(req.AccessToken)
 	}
 	if err == ErrorInvalidToken {
-		log.Println(err.Error())
 		response.Err = err.Error()
 		return response, nil
 	}
@@ -111,6 +107,11 @@ func (Auth) Update(_ context.Context, req api.UpdateRequest) (api.UpdateResponse
 
 	u.Save()
 	response.UpdateToken = req.UpdateToken
+	response.Username = u.Username
+	response.FirstName = u.FirstName
+	response.LastName = u.LastName
+	response.Email = u.Email
+
 	return response, nil
 }
 

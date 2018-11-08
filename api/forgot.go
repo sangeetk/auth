@@ -17,7 +17,11 @@ type ForgotRequest struct {
 
 // ForgotResponse - Reset the new password
 type ForgotResponse struct {
-	ForgotToken string `json:"forgot_token,omitempty"`
+	ForgotToken string `json:"forgot_token"`
+	Name        string `json:"name"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	Email       string `json:"email"`
 	Err         string `json:"err,omitempty"`
 }
 
