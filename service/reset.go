@@ -43,6 +43,7 @@ func (a Auth) Reset(ctx context.Context, req api.ResetRequest) (api.ResetRespons
 	u.Password = PasswordHash
 	u.Save()
 
+	response.Username = u.Username
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
 	response.Email = u.Email

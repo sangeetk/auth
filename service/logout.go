@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
@@ -14,20 +13,26 @@ import (
 // Logout - Logouts the current user
 func (Auth) Logout(ctx context.Context, req api.LogoutRequest) (api.LogoutResponse, error) {
 	var response api.LogoutResponse
+	var err error
 
 	// Ignore if it is an invalid token
-	_, err := ParseToken(req.AccessToken)
-	if err == ErrorInvalidToken {
-		response.Err = err.Error()
-		return response, nil
+	_, err = ParseToken(req.AccessToken)
+	if err != ErrorInvalidToken && err != ErrorExpiredToken {
+		// Blacklist the access token
+		err = BlacklistTokens.Add(req.AccessToken, nil, cache.DefaultExpiration)
+	}
+	if err != nil {
+		response.Err = ErrorInvalidToken.Error()
 	}
 
-	if err != ErrorExpiredToken {
+	// Ignore if it is an invalid refresh token
+	_, err = ParseToken(req.RefreshToken)
+	if err != ErrorInvalidToken && err != ErrorExpiredToken {
 		// Blacklist the token
-		err := BlacklistTokens.Add(req.AccessToken, nil, cache.DefaultExpiration)
-		if err != nil {
-			log.Println(err.Error())
-		}
+		err = BlacklistTokens.Add(req.RefreshToken, nil, cache.DefaultExpiration)
+	}
+	if err != nil {
+		response.Err = ErrorInvalidToken.Error()
 	}
 
 	return response, nil

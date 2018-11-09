@@ -16,11 +16,9 @@ func (a Auth) Confirm(ctx context.Context, req api.ConfirmRequest) (api.ConfirmR
 	var u *user.User
 	var err error
 
-	if req.ConfirmToken != "" {
-		u, err = ParseToken(req.ConfirmToken)
-	}
-	if err == ErrorInvalidToken {
-		response.Err = err.Error()
+	u, err = ParseToken(req.ConfirmToken)
+	if err != nil {
+		response.Err = ErrorInvalidToken.Error()
 		return response, nil
 	}
 

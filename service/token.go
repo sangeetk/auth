@@ -12,6 +12,10 @@ import (
 func ParseToken(tokenString string) (*user.User, error) {
 	var u = new(user.User)
 
+	if tokenString == "" {
+		return nil, ErrorInvalidToken
+	}
+
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

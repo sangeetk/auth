@@ -40,7 +40,7 @@ func (Auth) Forgot(ctx context.Context, req api.ForgotRequest) (api.ForgotRespon
 		response.Err = err.Error()
 		return response, nil
 	}
-	response.Name = u.Name
+	response.Username = u.Username
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
 	response.Email = u.Email
