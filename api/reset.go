@@ -12,7 +12,7 @@ import (
 
 // ResetRequest - Reset the password
 type ResetRequest struct {
-	ForgotToken string `json:"forgot_token"`
+	ResetToken  string `json:"reset_token"`
 	NewPassword string `json:"new_password"`
 }
 

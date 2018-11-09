@@ -35,7 +35,7 @@ func (Auth) Forgot(ctx context.Context, req api.ForgotRequest) (api.ForgotRespon
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
-	response.ForgotToken, err = forgotToken.SignedString(SigningKey)
+	response.ResetToken, err = forgotToken.SignedString(SigningKey)
 	if err != nil {
 		response.Err = err.Error()
 		return response, nil

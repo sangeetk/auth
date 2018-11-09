@@ -15,12 +15,12 @@ import (
 func (a Auth) Reset(ctx context.Context, req api.ResetRequest) (api.ResetResponse, error) {
 	var response api.ResetResponse
 
-	if req.ForgotToken == "" || req.NewPassword == "" {
+	if req.ResetToken == "" || req.NewPassword == "" {
 		response.Err = ErrorInvalidRequest.Error()
 		return response, nil
 	}
 
-	identify := api.IdentifyRequest{AccessToken: req.ForgotToken}
+	identify := api.IdentifyRequest{AccessToken: req.ResetToken}
 	id, err := a.Identify(ctx, identify)
 	if err == nil || id.Err != "" {
 		response.Err = ErrorInvalidToken.Error()
