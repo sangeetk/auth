@@ -26,10 +26,12 @@ func (Auth) Identify(ctx context.Context, req api.IdentifyRequest) (api.Identify
 	}
 
 	// Send the user details
+	response.Domain = u.InitialDomain
 	response.Username = u.Username
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
 	response.Email = u.Email
+	response.Roles = u.Roles[u.InitialDomain]
 
 	return response, nil
 }

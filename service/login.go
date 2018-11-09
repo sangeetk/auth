@@ -36,6 +36,8 @@ func (Auth) Login(ctx context.Context, req api.LoginRequest) (api.LoginResponse,
 		"fname":    u.FirstName,
 		"lname":    u.LastName,
 		"email":    u.Email,
+		"domain":   req.Domain,
+		"roles":    u.Roles[req.Domain],
 		"nbf":      time.Now().Unix(),
 		"exp":      time.Now().Add(AccessTokenValidity).Unix(),
 	})
@@ -49,9 +51,7 @@ func (Auth) Login(ctx context.Context, req api.LoginRequest) (api.LoginResponse,
 	// Create an Access JWT Token
 	rtoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": u.Username,
-		"fname":    u.FirstName,
-		"lname":    u.LastName,
-		"email":    u.Email,
+		"domain":   req.Domain,
 		"nbf":      time.Now().Unix(),
 		"exp":      time.Now().Add(RefreshTokenValidity).Unix(),
 	})

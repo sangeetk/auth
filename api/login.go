@@ -14,6 +14,7 @@ import (
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Domain   string `json:"domain"`
 }
 
 // LoginResponse - Returns JWT token on successful login
