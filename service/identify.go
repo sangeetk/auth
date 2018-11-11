@@ -20,7 +20,7 @@ func (a Auth) Identify(ctx context.Context, req api.IdentifyRequest) (api.Identi
 	}
 
 	// Check by looking for Blacklisted tokens in Cache
-	if _, found := BlacklistTokens.Get(req.AccessToken); found {
+	if _, found := BlacklistAccessTokens.Get(req.AccessToken); found {
 		response.Err = ErrorInvalidToken.Error()
 		return response, nil
 	}

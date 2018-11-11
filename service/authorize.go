@@ -22,19 +22,14 @@ func (Auth) Authorize(ctx context.Context, req api.AuthorizeRequest) (api.Author
 		return response, nil
 	}
 
-	// Check by looking for Blacklisted tokens in Cache
-	if _, found := BlacklistTokens.Get(req.AccessToken); found {
+	// Check by looking for Blacklisted access tokens in Cache
+	if _, found := BlacklistAccessTokens.Get(req.AccessToken); found {
 		response.Err = ErrorInvalidToken.Error()
 		return response, nil
 	}
 
-	u, err = user.Read(u.Username)
-	if err != nil || u.Confirmed != true {
-		response.Err = ErrorNotFound.Error()
-		return response, nil
-	}
-
-	roles, ok := u.Roles[req.Domain]
+	// Using InitialDomain as temp variable
+	roles, ok := u.Roles[u.InitialDomain]
 	if !ok {
 		return response, nil
 	}

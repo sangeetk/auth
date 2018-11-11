@@ -13,7 +13,6 @@ import (
 // AuthorizeRequest - Authorize against the role
 type AuthorizeRequest struct {
 	AccessToken string `json:"access_token"`
-	Domain      string `json:"domain"`
 	Role        string `json:"role"`
 }
 

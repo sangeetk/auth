@@ -36,8 +36,11 @@ func (Auth) Refresh(ctx context.Context, req api.RefreshRequest) (api.RefreshRes
 		"fname":    u.FirstName,
 		"lname":    u.LastName,
 		"email":    u.Email,
-		"nbf":      time.Now().Unix(),
-		"exp":      time.Now().Add(AccessTokenValidity).Unix(),
+		// Using InitialDomain only as a temp variable
+		"domain": u.InitialDomain,
+		"roles":  u.Roles[u.InitialDomain],
+		"nbf":    time.Now().Unix(),
+		"exp":    time.Now().Add(AccessTokenValidity).Unix(),
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
@@ -49,9 +52,7 @@ func (Auth) Refresh(ctx context.Context, req api.RefreshRequest) (api.RefreshRes
 	// Create an Access JWT Token
 	rtoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": u.Username,
-		"fname":    u.FirstName,
-		"lname":    u.LastName,
-		"email":    u.Email,
+		"domain":   u.InitialDomain,
 		"nbf":      time.Now().Unix(),
 		"exp":      time.Now().Add(RefreshTokenValidity).Unix(),
 	})

@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
-	"github.com/patrickmn/go-cache"
 	"github.com/urantiatech/kit/endpoint"
 )
 
@@ -19,7 +18,7 @@ func (Auth) Logout(ctx context.Context, req api.LogoutRequest) (api.LogoutRespon
 	_, err = ParseToken(req.AccessToken)
 	if err != ErrorInvalidToken && err != ErrorExpiredToken {
 		// Blacklist the access token
-		err = BlacklistTokens.Add(req.AccessToken, nil, cache.DefaultExpiration)
+		err = BlacklistAccessTokens.Add(req.AccessToken, nil, AccessTokenValidity)
 	}
 	if err != nil {
 		response.Err = ErrorInvalidToken.Error()
@@ -29,7 +28,7 @@ func (Auth) Logout(ctx context.Context, req api.LogoutRequest) (api.LogoutRespon
 	_, err = ParseToken(req.RefreshToken)
 	if err != ErrorInvalidToken && err != ErrorExpiredToken {
 		// Blacklist the token
-		err = BlacklistTokens.Add(req.RefreshToken, nil, cache.DefaultExpiration)
+		err = BlacklistRefreshTokens.Add(req.RefreshToken, nil, RefreshTokenValidity)
 	}
 	if err != nil {
 		response.Err = ErrorInvalidToken.Error()

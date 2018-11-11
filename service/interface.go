@@ -20,8 +20,11 @@ var AccessTokenValidity time.Duration
 // RefreshTokenValidity - JWT Refresh Token Validity
 var RefreshTokenValidity time.Duration
 
-// BlacklistTokens - Cache to store invalid tokens
-var BlacklistTokens *cache.Cache
+// BlacklistAccessTokens - Cache to store invalid access tokens
+var BlacklistAccessTokens *cache.Cache
+
+// BlacklistRefreshTokens - Cache to store invalid refresh tokens
+var BlacklistRefreshTokens *cache.Cache
 
 // AuthService - Authentication and Authorization Microservice
 type AuthService interface {
