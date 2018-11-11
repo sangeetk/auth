@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"github.com/urantiatech/kit/endpoint"
 )
 
@@ -15,23 +16,23 @@ func (Auth) Logout(ctx context.Context, req api.LogoutRequest) (api.LogoutRespon
 	var err error
 
 	// Ignore if it is an invalid token
-	_, err = ParseToken(req.AccessToken)
-	if err != ErrorInvalidToken && err != ErrorExpiredToken {
+	_, err = token.ParseToken(req.AccessToken)
+	if err != token.ErrorInvalidToken && err != token.ErrorExpiredToken {
 		// Blacklist the access token
-		err = BlacklistAccessTokens.Add(req.AccessToken, nil, AccessTokenValidity)
+		err = token.BlacklistAccessTokens.Add(req.AccessToken, nil, token.AccessTokenValidity)
 	}
 	if err != nil {
-		response.Err = ErrorInvalidToken.Error()
+		response.Err = token.ErrorInvalidToken.Error()
 	}
 
 	// Ignore if it is an invalid refresh token
-	_, err = ParseToken(req.RefreshToken)
-	if err != ErrorInvalidToken && err != ErrorExpiredToken {
-		// Blacklist the token
-		err = BlacklistRefreshTokens.Add(req.RefreshToken, nil, RefreshTokenValidity)
+	_, err = token.ParseToken(req.RefreshToken)
+	if err != token.ErrorInvalidToken && err != token.ErrorExpiredToken {
+		// Blacklist the refresh token
+		err = token.BlacklistRefreshTokens.Add(req.RefreshToken, nil, token.RefreshTokenValidity)
 	}
 	if err != nil {
-		response.Err = ErrorInvalidToken.Error()
+		response.Err = token.ErrorInvalidToken.Error()
 	}
 
 	return response, nil

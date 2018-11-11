@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"github.com/urantiatech/kit/endpoint"
 )
 
@@ -13,26 +14,25 @@ import (
 func (a Auth) Identify(ctx context.Context, req api.IdentifyRequest) (api.IdentifyResponse, error) {
 	var response api.IdentifyResponse
 
-	u, err := ParseToken(req.AccessToken)
+	t, err := token.ParseToken(req.AccessToken)
 	if err != nil {
 		response.Err = err.Error()
 		return response, nil
 	}
 
-	// Check by looking for Blacklisted tokens in Cache
-	if _, found := BlacklistAccessTokens.Get(req.AccessToken); found {
-		response.Err = ErrorInvalidToken.Error()
+	// Check against Blacklisted tokens
+	if _, found := token.BlacklistAccessTokens.Get(req.AccessToken); found {
+		response.Err = token.ErrorInvalidToken.Error()
 		return response, nil
 	}
 
 	// Send the user details
-	response.Domain = u.InitialDomain
-	response.Username = u.Username
-	response.FirstName = u.FirstName
-	response.LastName = u.LastName
-	response.Email = u.Email
-	// using InitialDomain as a temporary variable
-	response.Roles = u.Roles[u.InitialDomain]
+	response.Username = t.Username
+	response.FirstName = t.FirstName
+	response.LastName = t.LastName
+	response.Email = t.Email
+	response.Domain = t.Domain
+	response.Roles = t.Roles
 
 	return response, nil
 }

@@ -4,11 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/urantiatech/kit/endpoint"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,7 +18,7 @@ func (Auth) Login(ctx context.Context, req api.LoginRequest) (api.LoginResponse,
 
 	// Get user details
 	u, err := user.Read(req.Username)
-	if err != nil || u.Confirmed != true {
+	if err != nil || !u.Confirmed || !u.DeletedAt.IsZero() {
 		response.Err = ErrorInvalidLogin.Error()
 		return response, nil
 	}
@@ -30,41 +29,26 @@ func (Auth) Login(ctx context.Context, req api.LoginRequest) (api.LoginResponse,
 		return response, nil
 	}
 
-	// Create an Access JWT Token
-	atoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": u.Username,
-		"fname":    u.FirstName,
-		"lname":    u.LastName,
-		"email":    u.Email,
-		"domain":   req.Domain,
-		"roles":    u.Roles[req.Domain],
-		"nbf":      time.Now().Unix(),
-		"exp":      time.Now().Add(AccessTokenValidity).Unix(),
-	})
-
-	// Sign and get the complete encoded token as a string using the secret
-	response.AccessToken, err = atoken.SignedString(SigningKey)
+	// Create new Access Token
+	response.AccessToken, err = token.NewToken(u, req.Domain, token.AccessTokenValidity)
 	if err != nil {
 		response.Err = err.Error()
+		return response, nil
 	}
 
-	// Create an Access JWT Token
-	rtoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": u.Username,
-		"domain":   req.Domain,
-		"nbf":      time.Now().Unix(),
-		"exp":      time.Now().Add(RefreshTokenValidity).Unix(),
-	})
-	// Sign and get the complete encoded token as a string using the secret
-	response.RefreshToken, err = rtoken.SignedString(SigningKey)
+	// Create new Refresh Token
+	response.RefreshToken, err = token.NewToken(u, req.Domain, token.RefreshTokenValidity)
 	if err != nil {
 		response.Err = err.Error()
+		return response, nil
 	}
 
 	response.Username = u.Username
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
 	response.Email = u.Email
+	response.Domain = req.Domain
+	response.Roles = u.GetRoles(req.Domain)
 
 	return response, nil
 }

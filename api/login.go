@@ -19,13 +19,15 @@ type LoginRequest struct {
 
 // LoginResponse - Returns JWT token on successful login
 type LoginResponse struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	Username     string `json:"username"`
-	FirstName    string `json:"first_name"`
-	LastName     string `json:"last_name"`
-	Email        string `json:"email"`
-	Err          string `json:"err,omitempty"`
+	AccessToken  string   `json:"access_token"`
+	RefreshToken string   `json:"refresh_token"`
+	Username     string   `json:"username"`
+	FirstName    string   `json:"first_name"`
+	LastName     string   `json:"last_name"`
+	Email        string   `json:"email"`
+	Domain       string   `json:"domain"`
+	Roles        []string `json:"roles"`
+	Err          string   `json:"err,omitempty"`
 }
 
 // Login - logs a user in

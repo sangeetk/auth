@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
 	"github.com/urantiatech/kit/endpoint"
 )
@@ -13,19 +14,17 @@ import (
 // Confirm - Activates the user account after confirmation
 func (a Auth) Confirm(ctx context.Context, req api.ConfirmRequest) (api.ConfirmResponse, error) {
 	var response api.ConfirmResponse
-	var u *user.User
-	var err error
 
-	u, err = ParseToken(req.ConfirmToken)
+	t, err := token.ParseToken(req.ConfirmToken)
 	if err != nil {
-		response.Err = ErrorInvalidToken.Error()
+		response.Err = token.ErrorInvalidToken.Error()
 		return response, nil
 	}
 
 	// Read user details
-	u, err = user.Read(u.Username)
-	if err != nil || u.Confirmed != false {
-		response.Err = ErrorInvalidToken.Error()
+	u, err := user.Read(t.Username)
+	if err != nil || u.Confirmed || !u.DeletedAt.IsZero() {
+		response.Err = token.ErrorInvalidToken.Error()
 		return response, nil
 	}
 
@@ -36,6 +35,8 @@ func (a Auth) Confirm(ctx context.Context, req api.ConfirmRequest) (api.ConfirmR
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
 	response.Email = u.Email
+	response.Domain = t.Domain
+	response.Roles = u.GetRoles(t.Domain)
 
 	return response, nil
 }

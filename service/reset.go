@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
 	"github.com/urantiatech/kit/endpoint"
 	"golang.org/x/crypto/bcrypt"
@@ -14,24 +15,28 @@ import (
 // Reset - Resets the password
 func (a Auth) Reset(ctx context.Context, req api.ResetRequest) (api.ResetResponse, error) {
 	var response api.ResetResponse
-	var u *user.User
-	var err error
 
 	if req.ResetToken == "" || req.NewPassword == "" {
 		response.Err = ErrorInvalidRequest.Error()
 		return response, nil
 	}
 
-	u, err = ParseToken(req.ResetToken)
+	t, err := token.ParseToken(req.ResetToken)
 	if err != nil {
-		response.Err = ErrorInvalidToken.Error()
+		response.Err = token.ErrorInvalidToken.Error()
+		return response, nil
+	}
+
+	// Check against Blacklisted tokens
+	if _, found := token.BlacklistAccessTokens.Get(req.ResetToken); found {
+		response.Err = token.ErrorInvalidToken.Error()
 		return response, nil
 	}
 
 	// Read user details
-	u, err = user.Read(u.Username)
+	u, err := user.Read(t.Username)
 	if err != nil {
-		response.Err = ErrorInvalidToken.Error()
+		response.Err = token.ErrorInvalidToken.Error()
 		return response, nil
 	}
 
@@ -48,6 +53,8 @@ func (a Auth) Reset(ctx context.Context, req api.ResetRequest) (api.ResetRespons
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
 	response.Email = u.Email
+	response.Domain = t.Domain
+	response.Roles = u.GetRoles(t.Domain)
 
 	return response, nil
 }

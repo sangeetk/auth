@@ -13,6 +13,7 @@ import (
 // ForgotRequest - Forgot the account
 type ForgotRequest struct {
 	Username string `json:"username"`
+	Domain   string `json:"domain"`
 }
 
 // ForgotResponse - Reset the new password

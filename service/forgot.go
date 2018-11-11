@@ -4,11 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/urantiatech/kit/endpoint"
 )
 
@@ -22,24 +21,18 @@ func (Auth) Forgot(ctx context.Context, req api.ForgotRequest) (api.ForgotRespon
 	}
 
 	u, err := user.Read(req.Username)
-	if err != nil || u.Confirmed != true {
+	if err != nil || !u.DeletedAt.IsZero() {
 		response.Err = ErrorNotFound.Error()
 		return response, nil
 	}
 
 	// Create the Forgot token
-	resetToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": u.Username,
-		"nbf":      time.Now().Unix(),
-		"exp":      time.Now().Add(24 * time.Hour).Unix(),
-	})
-
-	// Sign and get the complete encoded token as a string using the secret
-	response.ResetToken, err = resetToken.SignedString(SigningKey)
+	response.ResetToken, err = token.NewToken(u, req.Domain, token.ResetTokenValidity)
 	if err != nil {
 		response.Err = err.Error()
 		return response, nil
 	}
+
 	response.Username = u.Username
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName

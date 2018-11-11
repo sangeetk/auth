@@ -32,3 +32,8 @@ func Path(u string) string {
 	path += "/" + hash + ".json"
 	return path
 }
+
+// GetRoles returns roles for the given domain
+func (u *User) GetRoles(domain string) []string {
+	return []string{}
+}

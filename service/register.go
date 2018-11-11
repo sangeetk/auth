@@ -5,11 +5,10 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/urantiatech/kit/endpoint"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -33,7 +32,7 @@ func (Auth) Register(ctx context.Context, req api.RegisterRequest) (api.Register
 		log.Println("Bcrypt error:", err.Error())
 	}
 
-	var u = user.User{
+	var u = &user.User{
 		Username:      req.Username,
 		Name:          req.Name,
 		FirstName:     req.FirstName,
@@ -57,28 +56,14 @@ func (Auth) Register(ctx context.Context, req api.RegisterRequest) (api.Register
 	}
 
 	// Create the Confirmation token
-	confirmToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": req.Username,
-		"nbf":      time.Now().Unix(),
-		"exp":      time.Now().Add(24 * time.Hour).Unix(),
-	})
-
-	// Sign and get the complete encoded token as a string using the secret
-	response.ConfirmToken, err = confirmToken.SignedString(SigningKey)
+	response.ConfirmToken, err = token.NewToken(u, req.Domain, token.ConfirmTokenValidity)
 	if err != nil {
 		response.Err = err.Error()
 		return response, nil
 	}
 
-	// Create an Update Token
-	updateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": u.Username,
-		"nbf":      time.Now().Unix(),
-		"exp":      time.Now().Add(1 * time.Hour).Unix(),
-	})
-
-	// Sign and get the complete encoded token as a string using the secret
-	response.UpdateToken, err = updateToken.SignedString(SigningKey)
+	// Create the Update token
+	response.UpdateToken, err = token.NewToken(u, req.Domain, token.UpdateTokenValidity)
 	if err != nil {
 		response.Err = err.Error()
 		return response, nil
@@ -88,6 +73,8 @@ func (Auth) Register(ctx context.Context, req api.RegisterRequest) (api.Register
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
 	response.Email = u.Email
+	response.Domain = req.Domain
+	response.Roles = u.GetRoles(req.Domain)
 
 	return response, nil
 }

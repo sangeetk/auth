@@ -11,6 +11,7 @@ import (
 	"time"
 
 	s "git.urantiatech.com/auth/auth/service"
+	t "git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
 	"github.com/gorilla/mux"
 	"github.com/patrickmn/go-cache"
@@ -42,17 +43,20 @@ func main() {
 	}
 
 	if key == "NEW" {
-		s.SigningKey = []byte(s.RandomToken(16))
+		t.SigningKey = []byte(t.RandomToken(16))
 	} else if key != "" {
-		s.SigningKey = []byte(key)
+		t.SigningKey = []byte(key)
 	}
-	log.Println("SIGNING_KEY: ", string(s.SigningKey))
+	log.Println("SIGNING_KEY: ", string(t.SigningKey))
 
 	// Create a cache with TTL for storing logged-out tokens
-	s.AccessTokenValidity = 10 * time.Minute
-	s.RefreshTokenValidity = 1 * time.Hour
-	s.BlacklistAccessTokens = cache.New(s.AccessTokenValidity, 2*s.AccessTokenValidity)
-	s.BlacklistRefreshTokens = cache.New(s.RefreshTokenValidity, 2*s.RefreshTokenValidity)
+	t.AccessTokenValidity = 10 * time.Minute
+	t.RefreshTokenValidity = 1 * time.Hour
+	t.ResetTokenValidity = 24 * time.Hour
+	t.ConfirmTokenValidity = 24 * time.Hour
+	t.UpdateTokenValidity = 10 * time.Minute
+	t.BlacklistAccessTokens = cache.New(t.AccessTokenValidity, 2*t.AccessTokenValidity)
+	t.BlacklistRefreshTokens = cache.New(t.RefreshTokenValidity, 2*t.RefreshTokenValidity)
 
 	var svc s.Auth
 	svc = s.Auth{}

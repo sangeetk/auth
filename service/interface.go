@@ -5,26 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"time"
 
 	"git.urantiatech.com/auth/auth/api"
-	"github.com/patrickmn/go-cache"
 )
-
-// SigningKey - JWT Signing Key
-var SigningKey []byte
-
-// AccessTokenValidity - JWT Access Token Validity
-var AccessTokenValidity time.Duration
-
-// RefreshTokenValidity - JWT Refresh Token Validity
-var RefreshTokenValidity time.Duration
-
-// BlacklistAccessTokens - Cache to store invalid access tokens
-var BlacklistAccessTokens *cache.Cache
-
-// BlacklistRefreshTokens - Cache to store invalid refresh tokens
-var BlacklistRefreshTokens *cache.Cache
 
 // AuthService - Authentication and Authorization Microservice
 type AuthService interface {
@@ -47,12 +30,6 @@ var ErrorNotFound = errors.New("Not Found")
 
 // ErrorAlreadyRegistered - User Already Registered
 var ErrorAlreadyRegistered = errors.New("Already Registered")
-
-// ErrorInvalidToken - Invalid Token
-var ErrorInvalidToken = errors.New("Invalid Token")
-
-// ErrorExpiredToken - Expired Token
-var ErrorExpiredToken = errors.New("Expired Token")
 
 // ErrorInvalidLogin - Invalid Login
 var ErrorInvalidLogin = errors.New("Invalid Login")

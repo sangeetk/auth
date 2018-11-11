@@ -18,11 +18,13 @@ type DeleteRequest struct {
 
 // DeleteResponse - Returns error if delete fails
 type DeleteResponse struct {
-	Username  string `json:"username"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Err       string `json:"err,omitempty"`
+	Username  string   `json:"username"`
+	FirstName string   `json:"first_name"`
+	LastName  string   `json:"last_name"`
+	Email     string   `json:"email"`
+	Domain    string   `json:"domain"`
+	Roles     []string `json:"roles"`
+	Err       string   `json:"err,omitempty"`
 }
 
 // Delete - deletes or deactivates the user

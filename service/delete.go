@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
 	"github.com/urantiatech/kit/endpoint"
 	"golang.org/x/crypto/bcrypt"
@@ -17,14 +18,20 @@ func (Auth) Delete(ctx context.Context, req api.DeleteRequest) (api.DeleteRespon
 	var response = api.DeleteResponse{}
 
 	// Validate the token and get user info
-	u, err := ParseToken(req.AccessToken)
-	if err == ErrorInvalidToken {
+	t, err := token.ParseToken(req.AccessToken)
+	if err == token.ErrorInvalidToken {
 		response.Err = err.Error()
 		return response, nil
 	}
 
-	u, err = user.Read(u.Username)
-	if err != nil || u.Confirmed != true {
+	// Check against Blacklisted tokens
+	if _, found := token.BlacklistAccessTokens.Get(req.AccessToken); found {
+		response.Err = token.ErrorInvalidToken.Error()
+		return response, nil
+	}
+
+	u, err := user.Read(t.Username)
+	if err != nil || !u.Confirmed || !u.DeletedAt.IsZero() {
 		response.Err = ErrorNotFound.Error()
 		return response, nil
 	}
@@ -38,6 +45,13 @@ func (Auth) Delete(ctx context.Context, req api.DeleteRequest) (api.DeleteRespon
 	u.Confirmed = false
 	u.DeletedAt = time.Now()
 	u.Save()
+
+	response.Username = u.Username
+	response.FirstName = u.FirstName
+	response.LastName = u.LastName
+	response.Email = u.Email
+	response.Domain = t.Domain
+	response.Roles = u.GetRoles(t.Domain)
 
 	return response, nil
 }

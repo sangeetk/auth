@@ -18,11 +18,13 @@ type ResetRequest struct {
 
 // ResetResponse - Reset password response
 type ResetResponse struct {
-	Username  string `json:"username"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Err       string `json:"err,omitempty"`
+	Username  string   `json:"username"`
+	FirstName string   `json:"first_name"`
+	LastName  string   `json:"last_name"`
+	Email     string   `json:"email"`
+	Domain    string   `json:"domain"`
+	Roles     []string `json:"roles"`
+	Err       string   `json:"err,omitempty"`
 }
 
 // Reset - resets the password

@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
 	"github.com/urantiatech/kit/endpoint"
 	"golang.org/x/crypto/bcrypt"
@@ -15,22 +16,37 @@ import (
 // Update - Updates the user
 func (Auth) Update(ctx context.Context, req api.UpdateRequest) (api.UpdateResponse, error) {
 	var response = api.UpdateResponse{}
-	var u *user.User
+	var t *token.Token
 	var err error
 
 	// UpdateToken takes priority and ignores Confirmed status
 	if req.UpdateToken != "" {
-		u, err = ParseToken(req.UpdateToken)
+		t, err = token.ParseToken(req.UpdateToken)
 	} else {
-		u, err = ParseToken(req.AccessToken)
+		t, err = token.ParseToken(req.AccessToken)
 	}
-	if err == ErrorInvalidToken {
+	if err == token.ErrorInvalidToken {
 		response.Err = err.Error()
 		return response, nil
 	}
 
+	if req.AccessToken != "" {
+		// Check against Blacklisted tokens
+		if _, found := token.BlacklistAccessTokens.Get(req.AccessToken); found {
+			response.Err = token.ErrorInvalidToken.Error()
+			return response, nil
+		}
+
+		// Blacklist the exising Access Token
+		err = token.BlacklistAccessTokens.Add(req.AccessToken, nil, token.AccessTokenValidity)
+		if err != nil {
+			response.Err = token.ErrorInvalidToken.Error()
+			return response, nil
+		}
+	}
+
 	// Ignore u.Confirmed if UpdateToken is provided
-	u, err = user.Read(u.Username)
+	u, err := user.Read(t.Username)
 	if (err != nil) || (u.Confirmed == false && req.UpdateToken == "") {
 		response.Err = ErrorNotFound.Error()
 		return response, nil
@@ -92,8 +108,8 @@ func (Auth) Update(ctx context.Context, req api.UpdateRequest) (api.UpdateRespon
 	}
 
 	// Update Roles
-	if req.Domain != "" && len(req.Roles) > 0 {
-		u.Roles[req.Domain] = req.Roles
+	if len(req.Roles) > 0 {
+		u.Roles[t.Domain] = req.Roles
 	}
 
 	// Profile information
@@ -106,11 +122,21 @@ func (Auth) Update(ctx context.Context, req api.UpdateRequest) (api.UpdateRespon
 	}
 
 	u.Save()
+
+	// Create new Access Token
+	response.NewAccessToken, err = token.NewToken(u, t.Domain, token.AccessTokenValidity)
+	if err != nil {
+		response.Err = err.Error()
+		return response, nil
+	}
+
 	response.UpdateToken = req.UpdateToken
 	response.Username = u.Username
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
 	response.Email = u.Email
+	response.Domain = t.Domain
+	response.Roles = u.GetRoles(t.Domain)
 
 	return response, nil
 }

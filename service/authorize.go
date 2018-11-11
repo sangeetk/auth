@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
 	"github.com/urantiatech/kit/endpoint"
 )
@@ -13,27 +14,28 @@ import (
 // Authorize - Sends Auth Token if user has "role"
 func (Auth) Authorize(ctx context.Context, req api.AuthorizeRequest) (api.AuthorizeResponse, error) {
 	var response = api.AuthorizeResponse{Authorize: false}
-	var u *user.User
 
 	// Validate the token and get user info
-	u, err := ParseToken(req.AccessToken)
-	if err == ErrorInvalidToken {
+	t, err := token.ParseToken(req.AccessToken)
+	if err == token.ErrorInvalidToken {
 		response.Err = err.Error()
 		return response, nil
 	}
 
-	// Check by looking for Blacklisted access tokens in Cache
-	if _, found := BlacklistAccessTokens.Get(req.AccessToken); found {
-		response.Err = ErrorInvalidToken.Error()
+	// Check against Blacklisted tokens
+	if _, found := token.BlacklistAccessTokens.Get(req.AccessToken); found {
+		response.Err = token.ErrorInvalidToken.Error()
 		return response, nil
 	}
 
-	// Using InitialDomain as temp variable
-	roles, ok := u.Roles[u.InitialDomain]
-	if !ok {
+	// Read user details
+	u, err := user.Read(t.Username)
+	if err != nil || !u.Confirmed || !u.DeletedAt.IsZero() {
+		response.Err = token.ErrorInvalidToken.Error()
 		return response, nil
 	}
-	for _, r := range roles {
+
+	for _, r := range u.GetRoles(t.Domain) {
 		if r == req.Role {
 			response.Authorize = true
 		}

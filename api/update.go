@@ -21,7 +21,6 @@ type UpdateRequest struct {
 	LastName    string            `json:"last_name"`
 	NewPassword string            `json:"new_password"`
 	Birthday    time.Time         `json:"birthday"`
-	Domain      string            `json:"domain"`
 	Roles       []string          `json:"roles"`
 	Address     Address           `json:"address"`
 	Profile     map[string]string `json:"profile"`
@@ -29,12 +28,15 @@ type UpdateRequest struct {
 
 // UpdateResponse - Returns error if update fails
 type UpdateResponse struct {
-	UpdateToken string `json:"update_token"`
-	Username    string `json:"username"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Email       string `json:"email"`
-	Err         string `json:"err,omitempty"`
+	UpdateToken    string   `json:"update_token"`
+	NewAccessToken string   `json:"new_access_token"`
+	Username       string   `json:"username"`
+	FirstName      string   `json:"first_name"`
+	LastName       string   `json:"last_name"`
+	Email          string   `json:"email"`
+	Domain         string   `json:"domain"`
+	Roles          []string `json:"roles"`
+	Err            string   `json:"err,omitempty"`
 }
 
 // Update - updates the user profile

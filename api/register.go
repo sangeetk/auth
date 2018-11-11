@@ -42,13 +42,15 @@ type RegisterRequest struct {
 
 // RegisterResponse - New User registration response
 type RegisterResponse struct {
-	ConfirmToken string `json:"confirm_token,omitempty"`
-	UpdateToken  string `json:"update_token,omitempty"`
-	Username     string `json:"username"`
-	FirstName    string `json:"first_name"`
-	LastName     string `json:"last_name"`
-	Email        string `json:"email"`
-	Err          string `json:"err,omitempty"`
+	ConfirmToken string   `json:"confirm_token"`
+	UpdateToken  string   `json:"update_token"`
+	Username     string   `json:"username"`
+	FirstName    string   `json:"first_name"`
+	LastName     string   `json:"last_name"`
+	Email        string   `json:"email"`
+	Domain       string   `json:"domain"`
+	Roles        []string `json:"roles"`
+	Err          string   `json:"err,omitempty"`
 }
 
 // Register - registers a new user

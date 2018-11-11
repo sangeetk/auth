@@ -4,62 +4,48 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"git.urantiatech.com/auth/auth/api"
+	"git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/urantiatech/kit/endpoint"
 )
 
 // Refresh - Generates a new token and extends existing session
 func (Auth) Refresh(ctx context.Context, req api.RefreshRequest) (api.RefreshResponse, error) {
 	var response api.RefreshResponse
-	var u *user.User
 
 	// Validate the refresh token and get user info
-	u, err := ParseToken(req.RefreshToken)
-	if err == ErrorInvalidToken {
-		response.Err = ErrorInvalidToken.Error()
+	t, err := token.ParseToken(req.RefreshToken)
+	if err == token.ErrorInvalidToken {
+		response.Err = token.ErrorInvalidToken.Error()
 		return response, nil
 	}
 
-	u, err = user.Read(u.Username)
+	// Check against Blacklisted refresh tokens
+	if _, found := token.BlacklistRefreshTokens.Get(req.RefreshToken); found {
+		response.Err = token.ErrorInvalidToken.Error()
+		return response, nil
+	}
+
+	u, err := user.Read(t.Username)
 	if err != nil || u.Confirmed != true {
 		response.Err = ErrorNotFound.Error()
 		return response, nil
 	}
 
-	// Create an Access JWT Token
-	atoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": u.Username,
-		"fname":    u.FirstName,
-		"lname":    u.LastName,
-		"email":    u.Email,
-		// Using InitialDomain only as a temp variable
-		"domain": u.InitialDomain,
-		"roles":  u.Roles[u.InitialDomain],
-		"nbf":    time.Now().Unix(),
-		"exp":    time.Now().Add(AccessTokenValidity).Unix(),
-	})
-
-	// Sign and get the complete encoded token as a string using the secret
-	response.NewAccessToken, err = atoken.SignedString(SigningKey)
+	// Create new Access Token
+	response.NewAccessToken, err = token.NewToken(u, t.Domain, token.AccessTokenValidity)
 	if err != nil {
 		response.Err = err.Error()
+		return response, nil
 	}
 
-	// Create an Access JWT Token
-	rtoken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": u.Username,
-		"domain":   u.InitialDomain,
-		"nbf":      time.Now().Unix(),
-		"exp":      time.Now().Add(RefreshTokenValidity).Unix(),
-	})
-	// Sign and get the complete encoded token as a string using the secret
-	response.NewRefreshToken, err = rtoken.SignedString(SigningKey)
+	// Create new Refresh Token
+	response.NewRefreshToken, err = token.NewToken(u, t.Domain, token.RefreshTokenValidity)
 	if err != nil {
 		response.Err = err.Error()
+		return response, nil
 	}
 
 	return response, nil

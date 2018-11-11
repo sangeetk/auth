@@ -1,16 +1,12 @@
-package service
+package token
 
 import (
-	"fmt"
-	"math/rand"
-
-	"git.urantiatech.com/auth/auth/user"
 	"github.com/dgrijalva/jwt-go"
 )
 
 // ParseToken - Parses the access token and extract username etc
-func ParseToken(tokenString string) (*user.User, error) {
-	var u = new(user.User)
+func ParseToken(tokenString string) (*Token, error) {
+	var t = new(Token)
 
 	if tokenString == "" {
 		return nil, ErrorInvalidToken
@@ -27,41 +23,31 @@ func ParseToken(tokenString string) (*user.User, error) {
 	})
 
 	if err != nil || !token.Valid {
-		return u, ErrorInvalidToken
+		return nil, ErrorInvalidToken
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		u.Username = claims["username"].(string)
+		t.Username = claims["username"].(string)
 		if _, ok := claims["fname"]; ok {
-			u.FirstName = claims["fname"].(string)
+			t.FirstName = claims["fname"].(string)
 		}
 		if _, ok := claims["lname"]; ok {
-			u.LastName = claims["lname"].(string)
+			t.LastName = claims["lname"].(string)
 		}
 		if _, ok := claims["email"]; ok {
-			u.Email = claims["email"].(string)
+			t.Email = claims["email"].(string)
 		}
 		if _, ok := claims["domain"]; ok {
-			// Using InitialDomain only as a temp variable
-			u.InitialDomain = claims["domain"].(string)
+			t.Domain = claims["domain"].(string)
 		}
 		if roles, ok := claims["roles"]; ok {
-			u.Roles = make(map[string][]string)
+			t.Roles = []string{}
 			if roles != nil {
 				for _, role := range roles.([]interface{}) {
-					u.Roles[u.InitialDomain] = append(u.Roles[u.InitialDomain], role.(string))
+					t.Roles = append(t.Roles, role.(string))
 				}
-			} else {
-				u.Roles[u.InitialDomain] = []string{}
 			}
 		}
 	}
-	return u, nil
-}
-
-// RandomToken - Generates a random token
-func RandomToken(size int) string {
-	b := make([]byte, size)
-	rand.Read(b)
-	return fmt.Sprintf("%x", b)
+	return t, nil
 }
