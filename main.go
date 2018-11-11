@@ -26,6 +26,8 @@ func main() {
 	flag.StringVar(&user.DBPath, "dbpath", "db", "User database directory")
 	flag.Parse()
 
+	log.SetFlags(log.Lshortfile)
+
 	if os.Getenv("PORT") != "" {
 		p, err := strconv.ParseInt(os.Getenv("PORT"), 10, 32)
 		if err != nil {

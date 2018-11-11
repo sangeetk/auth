@@ -14,22 +14,23 @@ import (
 // Reset - Resets the password
 func (a Auth) Reset(ctx context.Context, req api.ResetRequest) (api.ResetResponse, error) {
 	var response api.ResetResponse
+	var u *user.User
+	var err error
 
 	if req.ResetToken == "" || req.NewPassword == "" {
 		response.Err = ErrorInvalidRequest.Error()
 		return response, nil
 	}
 
-	identify := api.IdentifyRequest{AccessToken: req.ResetToken}
-	id, err := a.Identify(ctx, identify)
-	if err == nil || id.Err != "" {
+	u, err = ParseToken(req.ResetToken)
+	if err != nil {
 		response.Err = ErrorInvalidToken.Error()
 		return response, nil
 	}
 
 	// Read user details
-	u, err := user.Read(id.Username)
-	if err != nil || u.Confirmed != false {
+	u, err = user.Read(u.Username)
+	if err != nil {
 		response.Err = ErrorInvalidToken.Error()
 		return response, nil
 	}

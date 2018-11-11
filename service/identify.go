@@ -10,7 +10,7 @@ import (
 )
 
 // Identify - Identify the user based on the AccessToken
-func (Auth) Identify(ctx context.Context, req api.IdentifyRequest) (api.IdentifyResponse, error) {
+func (a Auth) Identify(ctx context.Context, req api.IdentifyRequest) (api.IdentifyResponse, error) {
 	var response api.IdentifyResponse
 
 	u, err := ParseToken(req.AccessToken)
@@ -31,6 +31,7 @@ func (Auth) Identify(ctx context.Context, req api.IdentifyRequest) (api.Identify
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
 	response.Email = u.Email
+	// using InitialDomain as a temporary variable
 	response.Roles = u.Roles[u.InitialDomain]
 
 	return response, nil

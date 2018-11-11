@@ -28,14 +28,14 @@ func (Auth) Forgot(ctx context.Context, req api.ForgotRequest) (api.ForgotRespon
 	}
 
 	// Create the Forgot token
-	forgotToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	resetToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": u.Username,
 		"nbf":      time.Now().Unix(),
 		"exp":      time.Now().Add(24 * time.Hour).Unix(),
 	})
 
 	// Sign and get the complete encoded token as a string using the secret
-	response.ResetToken, err = forgotToken.SignedString(SigningKey)
+	response.ResetToken, err = resetToken.SignedString(SigningKey)
 	if err != nil {
 		response.Err = err.Error()
 		return response, nil

@@ -45,9 +45,15 @@ func ParseToken(tokenString string) (*user.User, error) {
 			// Using InitialDomain only as a temp variable
 			u.InitialDomain = claims["domain"].(string)
 		}
-		if _, ok := claims["roles"]; ok {
+		if roles, ok := claims["roles"]; ok {
 			u.Roles = make(map[string][]string)
-			u.Roles[u.InitialDomain] = claims["roles"].([]string)
+			if roles != nil {
+				for _, role := range roles.([]interface{}) {
+					u.Roles[u.InitialDomain] = append(u.Roles[u.InitialDomain], role.(string))
+				}
+			} else {
+				u.Roles[u.InitialDomain] = []string{}
+			}
 		}
 	}
 	return u, nil
