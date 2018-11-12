@@ -48,6 +48,13 @@ func (Auth) Refresh(ctx context.Context, req api.RefreshRequest) (api.RefreshRes
 		return response, nil
 	}
 
+	response.Username = u.Username
+	response.FirstName = u.FirstName
+	response.LastName = u.LastName
+	response.Email = u.Email
+	response.Domain = t.Domain
+	response.Roles = u.GetRoles(t.Domain)
+
 	return response, nil
 }
 

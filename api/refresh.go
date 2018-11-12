@@ -17,9 +17,15 @@ type RefreshRequest struct {
 
 // RefreshResponse - Returns new JWT token on success
 type RefreshResponse struct {
-	NewAccessToken  string `json:"new_access_token"`
-	NewRefreshToken string `json:"new_refresh_token"`
-	Err             string `json:"err,omitempty"`
+	NewAccessToken  string   `json:"new_access_token"`
+	NewRefreshToken string   `json:"new_refresh_token"`
+	Username        string   `json:"username"`
+	FirstName       string   `json:"first_name"`
+	LastName        string   `json:"last_name"`
+	Email           string   `json:"email"`
+	Domain          string   `json:"domain"`
+	Roles           []string `json:"roles"`
+	Err             string   `json:"err,omitempty"`
 }
 
 // Refresh - extends the session by refreshing the JWT token

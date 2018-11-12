@@ -50,8 +50,8 @@ func main() {
 	log.Println("SIGNING_KEY: ", string(t.SigningKey))
 
 	// Create a cache with TTL for storing logged-out tokens
-	t.AccessTokenValidity = 10 * time.Minute
-	t.RefreshTokenValidity = 1 * time.Hour
+	t.AccessTokenValidity = 1 * time.Minute
+	t.RefreshTokenValidity = 5 * time.Minute
 	t.ResetTokenValidity = 24 * time.Hour
 	t.ConfirmTokenValidity = 24 * time.Hour
 	t.UpdateTokenValidity = 10 * time.Minute
