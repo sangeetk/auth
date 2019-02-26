@@ -114,6 +114,9 @@ func (Auth) Update(ctx context.Context, req api.UpdateRequest) (api.UpdateRespon
 
 	// Profile information
 	for k, v := range req.Profile {
+		if u.Profile == nil {
+			u.Profile = make(map[string]string)
+		}
 		if v == "" {
 			delete(u.Profile, k)
 		} else {
