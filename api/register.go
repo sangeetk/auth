@@ -38,12 +38,15 @@ type RegisterRequest struct {
 	Roles     []string    `json:"roles"`
 	Address   Address     `json:"address"`
 	Profile   UserProfile `json:"profile"`
+	CacheKey  string      `json:"cache_key"`
+	CacheReq  bool        `json:"cache_req"`
 }
 
 // RegisterResponse - New User registration response
 type RegisterResponse struct {
 	ConfirmToken string   `json:"confirm_token"`
 	UpdateToken  string   `json:"update_token"`
+	CacheKey     string   `json:"cache_key"`
 	Username     string   `json:"username"`
 	FirstName    string   `json:"first_name"`
 	LastName     string   `json:"last_name"`

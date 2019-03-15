@@ -19,3 +19,9 @@ func Read(u string) (*User, error) {
 	err = json.Unmarshal(content, user)
 	return user, err
 }
+
+// Exists returns true of user is already registered else false
+func Exists(u string) bool {
+	user, _ := Read(u)
+	return user != nil
+}

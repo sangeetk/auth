@@ -12,9 +12,10 @@ import (
 
 // LoginRequest - Login request
 type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Domain   string `json:"domain"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	Domain     string `json:"domain"`
+	RememberMe bool   `json:"remember_me"`
 }
 
 // LoginResponse - Returns JWT token on successful login

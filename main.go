@@ -52,11 +52,21 @@ func main() {
 	// Create a cache with TTL for storing logged-out tokens
 	t.AccessTokenValidity = 1 * time.Hour
 	t.RefreshTokenValidity = 3 * time.Hour
+
+	t.RememberMeAccessTokenValidity = 24 * time.Hour
+	t.RememberMeRefreshTokenValidity = 30 * 24 * time.Hour
+
 	t.ResetTokenValidity = 24 * time.Hour
-	t.ConfirmTokenValidity = 24 * time.Hour
-	t.UpdateTokenValidity = 10 * time.Minute
-	t.BlacklistAccessTokens = cache.New(t.AccessTokenValidity, 2*t.AccessTokenValidity)
-	t.BlacklistRefreshTokens = cache.New(t.RefreshTokenValidity, 2*t.RefreshTokenValidity)
+	t.ConfirmTokenValidity = 7 * 24 * time.Hour
+	t.UpdateTokenValidity = 15 * time.Minute
+
+	// Create cache for holding invalid tokens
+	t.BlacklistAccessTokens = cache.New(t.RememberMeAccessTokenValidity, 2*t.RememberMeAccessTokenValidity)
+	t.BlacklistRefreshTokens = cache.New(t.RememberMeRefreshTokenValidity, 2*t.RememberMeRefreshTokenValidity)
+
+	// Create cache for temporary registration
+	user.TemporaryRegistrationValidity = 1 * time.Hour
+	user.TemporaryRegistration = cache.New(user.TemporaryRegistrationValidity, 2*user.TemporaryRegistrationValidity)
 
 	var svc s.Auth
 	svc = s.Auth{}

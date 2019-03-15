@@ -6,7 +6,15 @@ import (
 	"io/ioutil"
 	"os"
 	"time"
+
+	"github.com/patrickmn/go-cache"
 )
+
+// TemporaryRegistrationValidity for multi-step registrations
+var TemporaryRegistrationValidity time.Duration
+
+// TemporaryRegistration - Cache to store invalid access tokens
+var TemporaryRegistration *cache.Cache
 
 // Create - Creates a new User into filesytem
 func (u *User) Create() error {

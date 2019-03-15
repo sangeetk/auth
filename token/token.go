@@ -17,6 +17,12 @@ var AccessTokenValidity time.Duration
 // RefreshTokenValidity - JWT Refresh Token Validity
 var RefreshTokenValidity time.Duration
 
+// RememberMeAccessTokenValidity - JWT Access Token Validity
+var RememberMeAccessTokenValidity time.Duration
+
+// RememberMeRefreshTokenValidity - JWT Refresh Token Validity
+var RememberMeRefreshTokenValidity time.Duration
+
 // ResetTokenValidity - JWT Reset Token Validity
 var ResetTokenValidity time.Duration
 

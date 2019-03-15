@@ -30,14 +30,22 @@ func (Auth) Login(ctx context.Context, req api.LoginRequest) (api.LoginResponse,
 	}
 
 	// Create new Access Token
-	response.AccessToken, err = token.NewToken(u, req.Domain, token.AccessTokenValidity)
+	if req.RememberMe {
+		response.AccessToken, err = token.NewToken(u, req.Domain, token.RememberMeAccessTokenValidity)
+	} else {
+		response.AccessToken, err = token.NewToken(u, req.Domain, token.AccessTokenValidity)
+	}
 	if err != nil {
 		response.Err = err.Error()
 		return response, nil
 	}
 
 	// Create new Refresh Token
-	response.RefreshToken, err = token.NewToken(u, req.Domain, token.RefreshTokenValidity)
+	if req.RememberMe {
+		response.RefreshToken, err = token.NewToken(u, req.Domain, token.RememberMeRefreshTokenValidity)
+	} else {
+		response.RefreshToken, err = token.NewToken(u, req.Domain, token.RefreshTokenValidity)
+	}
 	if err != nil {
 		response.Err = err.Error()
 		return response, nil
