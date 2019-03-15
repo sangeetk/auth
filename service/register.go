@@ -78,6 +78,12 @@ func (Auth) Register(ctx context.Context, req api.RegisterRequest) (api.Register
 				return response, nil
 			}
 
+			response.Username = u.Username
+			response.FirstName = u.FirstName
+			response.LastName = u.LastName
+			response.Email = u.Email
+			response.Domain = req.Domain
+			response.Roles = u.GetRoles(req.Domain)
 			response.CacheKey = cacheKey
 			return response, nil
 		}
@@ -108,6 +114,13 @@ func (Auth) Register(ctx context.Context, req api.RegisterRequest) (api.Register
 				response.Err = ErrorInvalidRequest.Error()
 				return response, nil
 			}
+
+			response.Username = u.Username
+			response.FirstName = u.FirstName
+			response.LastName = u.LastName
+			response.Email = u.Email
+			response.Domain = u.InitialDomain
+			response.Roles = u.GetRoles(req.Domain)
 			response.CacheKey = cacheKey
 			return response, nil
 		}
@@ -157,7 +170,7 @@ func (Auth) Register(ctx context.Context, req api.RegisterRequest) (api.Register
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
 	response.Email = u.Email
-	response.Domain = req.Domain
+	response.Domain = u.InitialDomain
 	response.Roles = u.GetRoles(req.Domain)
 
 	return response, nil
