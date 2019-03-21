@@ -13,8 +13,8 @@ import (
 )
 
 // Login - Log in the user after credentials are successfully authenticated
-func (Auth) Login(ctx context.Context, req api.LoginRequest) (api.LoginResponse, error) {
-	var response api.LoginResponse
+func (Auth) Login(ctx context.Context, req *api.LoginRequest) (*api.LoginResponse, error) {
+	var response = &api.LoginResponse{}
 
 	// Get user details
 	u, err := user.Read(req.Username)
@@ -62,10 +62,10 @@ func (Auth) Login(ctx context.Context, req api.LoginRequest) (api.LoginResponse,
 }
 
 // MakeLoginEndpoint -
-func MakeLoginEndpoint(svc Auth) endpoint.Endpoint {
+func MakeLoginEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.LoginRequest)
-		return svc.Login(ctx, req)
+		return svc.Login(ctx, &req)
 	}
 }
 

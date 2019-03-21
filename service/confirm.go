@@ -12,8 +12,8 @@ import (
 )
 
 // Confirm - Activates the user account after confirmation
-func (a Auth) Confirm(ctx context.Context, req api.ConfirmRequest) (api.ConfirmResponse, error) {
-	var response api.ConfirmResponse
+func (a Auth) Confirm(ctx context.Context, req *api.ConfirmRequest) (*api.ConfirmResponse, error) {
+	var response = &api.ConfirmResponse{}
 
 	t, err := token.ParseToken(req.ConfirmToken)
 	if err != nil {
@@ -42,10 +42,10 @@ func (a Auth) Confirm(ctx context.Context, req api.ConfirmRequest) (api.ConfirmR
 }
 
 // MakeConfirmEndpoint -
-func MakeConfirmEndpoint(svc Auth) endpoint.Endpoint {
+func MakeConfirmEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.ConfirmRequest)
-		return svc.Confirm(ctx, req)
+		return svc.Confirm(ctx, &req)
 	}
 }
 

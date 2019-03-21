@@ -15,8 +15,8 @@ import (
 )
 
 // Register - Register a new User
-func (Auth) Register(ctx context.Context, req api.RegisterRequest) (api.RegisterResponse, error) {
-	var response = api.RegisterResponse{}
+func (Auth) Register(ctx context.Context, req *api.RegisterRequest) (*api.RegisterResponse, error) {
+	var response = &api.RegisterResponse{}
 
 	var passwordHash []byte
 	var err error
@@ -98,7 +98,7 @@ func (Auth) Register(ctx context.Context, req api.RegisterRequest) (api.Register
 			}
 
 			// Update the user
-			updateCachedUser(cachedUser.(*user.User), &req)
+			updateCachedUser(cachedUser.(*user.User), req)
 
 			// Create a new token
 			cacheKey, err := token.NewToken(u, req.Domain, user.TemporaryRegistrationValidity)
@@ -135,7 +135,7 @@ func (Auth) Register(ctx context.Context, req api.RegisterRequest) (api.Register
 			}
 
 			// Update the user
-			updateCachedUser(cachedUser.(*user.User), &req)
+			updateCachedUser(cachedUser.(*user.User), req)
 
 			// Delete the user from Cache by setting expiry to 1 second
 			user.TemporaryRegistration.Set(req.CacheKey, nil, time.Second)
@@ -240,10 +240,10 @@ func updateCachedUser(u *user.User, req *api.RegisterRequest) {
 }
 
 // MakeRegisterEndpoint -
-func MakeRegisterEndpoint(svc Auth) endpoint.Endpoint {
+func MakeRegisterEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.RegisterRequest)
-		return svc.Register(ctx, req)
+		return svc.Register(ctx, &req)
 	}
 }
 

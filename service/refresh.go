@@ -12,8 +12,8 @@ import (
 )
 
 // Refresh - Generates a new token and extends existing session
-func (Auth) Refresh(ctx context.Context, req api.RefreshRequest) (api.RefreshResponse, error) {
-	var response api.RefreshResponse
+func (Auth) Refresh(ctx context.Context, req *api.RefreshRequest) (*api.RefreshResponse, error) {
+	var response = &api.RefreshResponse{}
 
 	// Validate the refresh token and get user info
 	t, err := token.ParseToken(req.RefreshToken)
@@ -59,10 +59,10 @@ func (Auth) Refresh(ctx context.Context, req api.RefreshRequest) (api.RefreshRes
 }
 
 // MakeRefreshEndpoint -
-func MakeRefreshEndpoint(svc Auth) endpoint.Endpoint {
+func MakeRefreshEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.RefreshRequest)
-		return svc.Refresh(ctx, req)
+		return svc.Refresh(ctx, &req)
 	}
 }
 

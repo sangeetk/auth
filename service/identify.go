@@ -11,8 +11,8 @@ import (
 )
 
 // Identify - Identify the user based on the AccessToken
-func (a Auth) Identify(ctx context.Context, req api.IdentifyRequest) (api.IdentifyResponse, error) {
-	var response api.IdentifyResponse
+func (a Auth) Identify(ctx context.Context, req *api.IdentifyRequest) (*api.IdentifyResponse, error) {
+	var response = &api.IdentifyResponse{}
 
 	t, err := token.ParseToken(req.AccessToken)
 	if err != nil {
@@ -38,10 +38,10 @@ func (a Auth) Identify(ctx context.Context, req api.IdentifyRequest) (api.Identi
 }
 
 // MakeIdentifyEndpoint -
-func MakeIdentifyEndpoint(svc Auth) endpoint.Endpoint {
+func MakeIdentifyEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.IdentifyRequest)
-		return svc.Identify(ctx, req)
+		return svc.Identify(ctx, &req)
 	}
 }
 

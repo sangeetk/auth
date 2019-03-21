@@ -14,8 +14,8 @@ import (
 )
 
 // Delete - Deletes the user
-func (Auth) Delete(ctx context.Context, req api.DeleteRequest) (api.DeleteResponse, error) {
-	var response = api.DeleteResponse{}
+func (Auth) Delete(ctx context.Context, req *api.DeleteRequest) (*api.DeleteResponse, error) {
+	var response = &api.DeleteResponse{}
 
 	// Validate the token and get user info
 	t, err := token.ParseToken(req.AccessToken)
@@ -57,10 +57,10 @@ func (Auth) Delete(ctx context.Context, req api.DeleteRequest) (api.DeleteRespon
 }
 
 // MakeDeleteEndpoint -
-func MakeDeleteEndpoint(svc Auth) endpoint.Endpoint {
+func MakeDeleteEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.DeleteRequest)
-		return svc.Delete(ctx, req)
+		return svc.Delete(ctx, &req)
 	}
 }
 

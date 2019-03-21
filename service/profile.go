@@ -12,8 +12,8 @@ import (
 )
 
 // Profile - Returns user profile
-func (a Auth) Profile(ctx context.Context, req api.ProfileRequest) (api.ProfileResponse, error) {
-	var response api.ProfileResponse
+func (a Auth) Profile(ctx context.Context, req *api.ProfileRequest) (*api.ProfileResponse, error) {
+	var response = &api.ProfileResponse{}
 
 	t, err := token.ParseToken(req.AccessToken)
 	if err != nil {
@@ -50,10 +50,10 @@ func (a Auth) Profile(ctx context.Context, req api.ProfileRequest) (api.ProfileR
 }
 
 // MakeProfileEndpoint -
-func MakeProfileEndpoint(svc Auth) endpoint.Endpoint {
+func MakeProfileEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.ProfileRequest)
-		return svc.Profile(ctx, req)
+		return svc.Profile(ctx, &req)
 	}
 }
 

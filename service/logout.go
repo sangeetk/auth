@@ -11,8 +11,8 @@ import (
 )
 
 // Logout - Logouts the current user
-func (Auth) Logout(ctx context.Context, req api.LogoutRequest) (api.LogoutResponse, error) {
-	var response api.LogoutResponse
+func (Auth) Logout(ctx context.Context, req *api.LogoutRequest) (*api.LogoutResponse, error) {
+	var response = &api.LogoutResponse{}
 	var err error
 
 	// Ignore if it is an invalid token
@@ -39,10 +39,10 @@ func (Auth) Logout(ctx context.Context, req api.LogoutRequest) (api.LogoutRespon
 }
 
 // MakeLogoutEndpoint -
-func MakeLogoutEndpoint(svc Auth) endpoint.Endpoint {
+func MakeLogoutEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.LogoutRequest)
-		return svc.Logout(ctx, req)
+		return svc.Logout(ctx, &req)
 	}
 }
 

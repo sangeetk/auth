@@ -14,8 +14,8 @@ import (
 )
 
 // Update - Updates the user
-func (Auth) Update(ctx context.Context, req api.UpdateRequest) (api.UpdateResponse, error) {
-	var response = api.UpdateResponse{}
+func (Auth) Update(ctx context.Context, req *api.UpdateRequest) (*api.UpdateResponse, error) {
+	var response = &api.UpdateResponse{}
 	var t *token.Token
 	var err error
 
@@ -145,10 +145,10 @@ func (Auth) Update(ctx context.Context, req api.UpdateRequest) (api.UpdateRespon
 }
 
 // MakeUpdateEndpoint -
-func MakeUpdateEndpoint(svc Auth) endpoint.Endpoint {
+func MakeUpdateEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.UpdateRequest)
-		return svc.Update(ctx, req)
+		return svc.Update(ctx, &req)
 	}
 }
 

@@ -12,8 +12,8 @@ import (
 )
 
 // Forgot - Resets the password
-func (Auth) Forgot(ctx context.Context, req api.ForgotRequest) (api.ForgotResponse, error) {
-	var response api.ForgotResponse
+func (Auth) Forgot(ctx context.Context, req *api.ForgotRequest) (*api.ForgotResponse, error) {
+	var response = &api.ForgotResponse{}
 
 	if req.Username == "" {
 		response.Err = ErrorInvalidRequest.Error()
@@ -42,10 +42,10 @@ func (Auth) Forgot(ctx context.Context, req api.ForgotRequest) (api.ForgotRespon
 }
 
 // MakeForgotEndpoint -
-func MakeForgotEndpoint(svc Auth) endpoint.Endpoint {
+func MakeForgotEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.ForgotRequest)
-		return svc.Forgot(ctx, req)
+		return svc.Forgot(ctx, &req)
 	}
 }
 

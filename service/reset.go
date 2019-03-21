@@ -13,8 +13,8 @@ import (
 )
 
 // Reset - Resets the password
-func (a Auth) Reset(ctx context.Context, req api.ResetRequest) (api.ResetResponse, error) {
-	var response api.ResetResponse
+func (a Auth) Reset(ctx context.Context, req *api.ResetRequest) (*api.ResetResponse, error) {
+	var response = &api.ResetResponse{}
 
 	if req.ResetToken == "" || req.NewPassword == "" {
 		response.Err = ErrorInvalidRequest.Error()
@@ -60,10 +60,10 @@ func (a Auth) Reset(ctx context.Context, req api.ResetRequest) (api.ResetRespons
 }
 
 // MakeResetEndpoint -
-func MakeResetEndpoint(svc Auth) endpoint.Endpoint {
+func MakeResetEndpoint(svc AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(api.ResetRequest)
-		return svc.Reset(ctx, req)
+		return svc.Reset(ctx, &req)
 	}
 }
 
