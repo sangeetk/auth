@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+  namespace: global
+spec:
+  ports:
+  - name: backend
+    targetPort: 8080
+    port: 80
+  selector:
+    app: auth
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: auth
+  namespace: global
+  labels:
+    app: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: localhost:5000/auth/auth
+        volumeMounts:
+        - mountPath: /db
+          name: db
+        env:
+        - name: SIGNING_KEY
+          value: "c82fe7279b6389c2a2a1e14a468ca38f"
+        ports:
+        - containerPort: 8080
+      volumes:
+      - name: db
+        hostPath:
+          path: /var/storage/global/auth/db
+          type: Directory
