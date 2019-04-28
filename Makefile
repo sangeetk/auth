@@ -9,6 +9,6 @@ prod:
 
 dev:
 	GOOS=linux CGO_ENABLED=0 go build -a -installsuffix cgo -o auth .
-	- docker image rm localhost:5000/auth/auth 
-	docker build -t localhost:5000/auth/auth .
-	docker push localhost:5000/auth/auth
+	- docker image rm localhost:32000/auth/auth 
+	docker build -t localhost:32000/auth/auth .
+	docker push localhost:32000/auth/auth

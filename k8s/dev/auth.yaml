@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: auth
-        image: localhost:5000/auth/auth
+        image: localhost:32000/auth/auth
         volumeMounts:
         - mountPath: /db
           name: db
