@@ -1,1 +1,0 @@
-SIGNING_KEY=c82fe7279b6389c2a2a1e14a468ca38f ./auth -port=9050
