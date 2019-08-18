@@ -8,7 +8,7 @@ import (
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
-	"github.com/urantiatech/kit/endpoint"
+	"github.com/go-kit/kit/endpoint"
 )
 
 // Confirm - Activates the user account after confirmation

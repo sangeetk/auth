@@ -7,7 +7,7 @@ import (
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/token"
-	"github.com/urantiatech/kit/endpoint"
+	"github.com/go-kit/kit/endpoint"
 )
 
 // Logout - Logouts the current user

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	ht "github.com/urantiatech/kit/transport/http"
+	ht "github.com/go-kit/kit/transport/http"
 )
 
 // LoginRequest - Login request

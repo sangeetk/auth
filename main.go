@@ -13,9 +13,9 @@ import (
 	s "git.urantiatech.com/auth/auth/service"
 	t "git.urantiatech.com/auth/auth/token"
 	"git.urantiatech.com/auth/auth/user"
+	h "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"github.com/patrickmn/go-cache"
-	h "github.com/urantiatech/kit/transport/http"
 )
 
 func main() {
