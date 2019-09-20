@@ -33,8 +33,10 @@ func (u *User) Create() error {
 	}
 
 	// Create file
-	u.CreatedAt = time.Now()
-	u.UpdatedAt = time.Now()
+	now := time.Now()
+	u.CreatedAt = now
+	u.UpdatedAt = now
+	u.PasswordUpdatedAt = now
 
 	userJSON, _ := json.MarshalIndent(u, "", "    ")
 	if err := ioutil.WriteFile(path, userJSON, 0644); err != nil {

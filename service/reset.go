@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/token"
@@ -46,7 +47,14 @@ func (a Auth) Reset(ctx context.Context, req *api.ResetRequest) (*api.ResetRespo
 		return response, nil
 	}
 
+	// Return error if password is changed in last 24 hours
+	if !u.PasswordUpdatedAt.Add(24 * time.Hour).Before(time.Now()) {
+		response.Err = token.ErrorInvalidToken.Error()
+		return response, nil
+	}
+
 	u.Password = PasswordHash
+	u.PasswordUpdatedAt = time.Now()
 	u.Save()
 
 	response.Username = u.Username

@@ -37,7 +37,8 @@ type User struct {
 	Locked        time.Time `json:"locked"`
 
 	// Timestamps
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt time.Time `json:"deleted_at"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
+	DeletedAt         time.Time `json:"deleted_at"`
+	PasswordUpdatedAt time.Time `json:"password_updated_at"`
 }

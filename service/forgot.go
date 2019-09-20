@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"git.urantiatech.com/auth/auth/api"
 	"git.urantiatech.com/auth/auth/token"
@@ -26,6 +27,12 @@ func (Auth) Forgot(ctx context.Context, req *api.ForgotRequest) (*api.ForgotResp
 		return response, nil
 	}
 
+	// Return error if password is changed in last 24 hours
+	if !u.PasswordUpdatedAt.Add(24 * time.Hour).Before(time.Now()) {
+		response.Err = token.ErrorPasswordRecentlyUpdated.Error()
+		return response, nil
+	}
+
 	// Create the Forgot token
 	response.ResetToken, err = token.NewToken(u, req.Domain, token.ResetTokenValidity)
 	if err != nil {
@@ -33,6 +40,7 @@ func (Auth) Forgot(ctx context.Context, req *api.ForgotRequest) (*api.ForgotResp
 		return response, nil
 	}
 
+	response.Domain = req.Domain
 	response.Username = u.Username
 	response.FirstName = u.FirstName
 	response.LastName = u.LastName
